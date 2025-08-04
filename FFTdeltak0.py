@@ -82,6 +82,21 @@ integrand_k = integrand_for_Delta(k, etabar, urange)  # integrand at given point
 
 
 def plot_integrand(k_0, eta_bar):
+    """
+    Plots the integrand for delta as function of integration variable u
+
+    Parameters
+    ----------
+    k_0 : array-like
+        frequency
+    eta_bar : float
+        mean of conformal times 1/2(eta' + eta)
+
+    Returns
+    -------
+    None.
+
+    """
     # Plotting the integrand for fixed value k0
     integrand_k0 = integrand_for_Delta(k_0, eta_bar, urange)
     plt.figure()
@@ -146,7 +161,7 @@ plt.title(r'$\Delta^<_\bar k(k_0, \bar \eta)$ as a function of $k_0$'
 plt.xlabel(r'$k_0 \in \left[k + L/\bar\eta, k - L/\bar\eta \right],\ L={a}$'
            .format(a=L))
 
-#plt.axvline(0, c='gray')  # comment out when |etabar| is large
+# plt.axvline(0, c='gray')  # comment out when |etabar| is large
 plt.axhline(0, c='gray')
 
 plt.axvline(k, c='b', linestyle='--')
