@@ -22,6 +22,7 @@ k = 10  # norm of k bar in [0, inf)
 etabar = -0.1  # mean of conformal times 1/2(eta' + eta) in (-inf, 0)
 # -k*etabar > 1 subhorizon
 # -k*etabar < 1 superhorizon
+print('a =', -1/(etabar*H))
 
 
 # number of data points for plotting and FFT
@@ -145,11 +146,11 @@ Delta = FFT_for_G(etabar, urange)
 
 
 # testataan onko delta funktio
-k0Delta = Delta*k0range
 integral1 = sum(Delta)*(k0range[1]-k0range[0])
-print(integral1)
+print('Delta(k_0, etabar) integraali =', integral1)
+k0Delta = Delta*k0range
 integral2 = sum(k0Delta)*(k0range[1]-k0range[0])
-print(integral2)
+print('k_0*Delta(k_0, etabar) integraali =', integral2)
 
 
 plt.figure(figsize=(11, 6))
