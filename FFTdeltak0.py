@@ -10,31 +10,35 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random
 
-
+# --SETTINGS--
 # constants (m/H <= 3/2 for real nu; for plotting pick m/H = small like 0.01)
 m = 0.01  # mass of field
 H = 1  # Hubble rate
 d = 4  # dimension
 
-nu = np.sqrt(((d - 1)/2)**2 - (m/H)**2)
-
-k = 10  # norm of k bar in [0, inf)
-etabar = -0.1  # mean of conformal times 1/2(eta' + eta) in (-inf, 0)
+k = 2  # norm of k bar in [0, inf)
+etabar = -0.3  # mean of conformal times 1/2(eta' + eta) in (-inf, 0)
 # -k*etabar > 1 subhorizon
 # -k*etabar < 1 superhorizon
-print('a =', -1/(etabar*H))
 
-
-# number of data points for plotting and FFT
+# number of data points for plotting and FFT (FFT matrix is N by N)
 N = 1000
+
+L = 15  # limits for k0 (when etabar = -1)
+
+# ------------
+
+
+nu = np.sqrt(((d - 1)/2)**2 - (m/H)**2)
+
+print('Scale factor a =', -1/(etabar*H))
+
 # integration variable u = Delta_eta/(2eta_bar) runs over (-1, 1)
 epsilon = 1e-10  # small threshold in order to avoid limit points (nan)
 urange = np.linspace(-1 + epsilon, 1 - epsilon, N)
 
 # for variable k0
-L = 15  # limits for k0 (when etabar = -1)
 k0range = np.linspace(L/etabar + k, -L/etabar + k, N)
-# number of data points can be adjusted (then FFT matrix is no longer square)
 
 
 def integrand_for_Delta(k_0, eta_bar, u):
@@ -48,7 +52,7 @@ def integrand_for_Delta(k_0, eta_bar, u):
     eta_bar : array-like
         mean of conformal times 1/2(eta' + eta)
     u : array-like
-        Integration variable u = (Deltaeta)/etabar;
+        Integration variable u = Deltaeta/etabar;
         Deltaeta = eta' - eta: conformal time difference
 
     Returns
@@ -66,6 +70,22 @@ def integrand_for_Delta(k_0, eta_bar, u):
 # Integrals using scipy quad
 # for variable k0
 def Delta_benchmark_integral(k_0, eta_bar):
+    """
+    Uses scipy quad to evaluate the integral for Delta at given points
+
+    Parameters
+    ----------
+    k_0 : float
+        frequency
+    eta_bar : array-like
+        mean of conformal times
+
+    Returns
+    -------
+    array-like
+        Delta at given points
+
+    """
     I_Re = lambda u: integrand_for_Delta(k_0, eta_bar, u).real
     I_Im = lambda u: integrand_for_Delta(k_0, eta_bar, u).imag
     return sc.integrate.quad(I_Re, -1, 1)[0] \
@@ -76,9 +96,9 @@ integral_k = Delta_benchmark_integral(k, etabar)
 # print(benchmark_integral)
 
 
-integrand_k = integrand_for_Delta(k, etabar, urange)  # integrand at given points u
+integrand_k = integrand_for_Delta(k, etabar, urange)  # integrand at points u
 # # this benchmark (for FFT) uses same u grid as the FFT (compare with scipy)
-# benchmark_integral1 = sum(integrand_k)*(urange[1]-urange[0])  # value of integral
+# benchmark_integral1 = sum(integrand_k)*(urange[1]-urange[0])
 # # print(benchmark_integral)
 
 
@@ -145,13 +165,16 @@ def FFT_for_G(eta_bar, u):
 Delta = FFT_for_G(etabar, urange)
 
 
-# testataan onko delta funktio
+# testin if Delta is delta function
 integral1 = sum(Delta)*(k0range[1]-k0range[0])
-print('Delta(k_0, etabar) integraali =', integral1)
+print('Delta(k_0, etabar) integral =', integral1)
 k0Delta = Delta*k0range
 integral2 = sum(k0Delta)*(k0range[1]-k0range[0])
-print('k_0*Delta(k_0, etabar) integraali =', integral2)
+print('k_0*Delta(k_0, etabar) integral =', integral2)
 
+
+# TODO: change plotting to a function (as in other code)
+# then it can be given multiple eta_bars, figure out the plt color change
 
 plt.figure(figsize=(11, 6))
 
@@ -162,7 +185,7 @@ plt.title(r'$\Delta^<_\bar k(k_0, \bar \eta)$ as a function of $k_0$'
 plt.xlabel(r'$k_0 \in \left[k + L/\bar\eta, k - L/\bar\eta \right],\ L={a}$'
            .format(a=L))
 
-# plt.axvline(0, c='gray')  # comment out when |etabar| is large
+plt.axvline(0, c='gray')  # comment out when |etabar| is large (out of range)
 plt.axhline(0, c='gray')
 
 plt.axvline(k, c='b', linestyle='--')
