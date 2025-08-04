@@ -1,3 +1,3 @@
 # Kosmoprojekti
 
-test
+Kesäharjoittelu koodia
