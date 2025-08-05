@@ -6,6 +6,6 @@ Kesäharjoittelu koodia
 
 -Vastaavasti FFTdeltaetak0.py:ssä on muuttujana eta*k_0
 
--FFTdeltamultiplotti.py:ssä k_0 funktiona voi plotata samaan kuvaajaan usealla etabar arvolla
+-FFTdeltamultiplotti.py:ssä eta*k_0 funktiona voi plotata samaan kuvaajaan usealla etabar arvolla
 
 -momenttienplottaus.py on vaiheessa
