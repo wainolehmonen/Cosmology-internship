@@ -17,7 +17,7 @@ H = 1  # Hubble rate
 d = 4  # dimension
 
 k = 2  # norm of k bar in [0, inf)
-etabar = -0.3  # mean of conformal times 1/2(eta' + eta) in (-inf, 0)
+etabar = -0.1  # mean of conformal times 1/2(eta' + eta) in (-inf, 0)
 # -k*etabar > 1 subhorizon
 # -k*etabar < 1 superhorizon
 
@@ -67,8 +67,6 @@ def integrand_for_Delta(k_0, eta_bar, u):
     return np.pi/2*H**2*eta_bar**4*c*hankel_a*hankel_b
 
 
-# Integrals using scipy quad
-# for variable k0
 def Delta_benchmark_integral(k_0, eta_bar):
     """
     Uses scipy quad to evaluate the integral for Delta at given points
@@ -99,7 +97,7 @@ integral_k = Delta_benchmark_integral(k, etabar)
 integrand_k = integrand_for_Delta(k, etabar, urange)  # integrand at points u
 # # this benchmark (for FFT) uses same u grid as the FFT (compare with scipy)
 # benchmark_integral1 = sum(integrand_k)*(urange[1]-urange[0])
-# # print(benchmark_integral)
+# print(benchmark_integral1)
 
 
 def plot_integrand(k_0, eta_bar):
@@ -166,11 +164,10 @@ Delta = FFT_for_G(etabar, urange)
 
 
 # TODO: understand what is going on here, is it dirac delta?
-# testing if Delta is delta function
-integral1 = sum(Delta)*(k0range[1]-k0range[0])
+integral1 = (sum(Delta)*(k0range[1]-k0range[0])).real  # has small imag error
 print('Delta(k_0, etabar) integral =', integral1)
 k0Delta = Delta*k0range
-integral2 = sum(k0Delta)*(k0range[1]-k0range[0])
+integral2 = (sum(k0Delta)*(k0range[1]-k0range[0])).real  # has small imag error
 print('k_0*Delta(k_0, etabar) integral =', integral2)
 
 

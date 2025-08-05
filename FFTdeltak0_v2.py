@@ -11,9 +11,10 @@ import matplotlib.pyplot as plt
 import random
 
 # ---SETTINGS---
+
 # constants (m/H <= 3/2 for real nu; for plotting pick m/H = small like 0.01)
 m = 0.01  # mass of field
-H = 1  # Hubble rate
+H = 1  # Hubble rate (H and etabar have inverse units, a = -1/(etabar*H))
 d = 4  # dimension
 
 k = 2  # norm of k bar in [0, inf)
@@ -146,15 +147,14 @@ def FFT_for_G(eta_bar, u, FFTmatrix):
     return np.pi/2*H**2*eta_bar**4*np.matmul(FFTmatrix, A)
 
 
-# TODO: write documentation
 def Deltaplotting(etas):
     """
-    Plots
+    Plots Delta for given etas, own figure for each eta
 
     Parameters
     ----------
-    etas : TYPE
-        DESCRIPTION.
+    etas : tuple
+        etabars for plotting
 
     Returns
     -------
