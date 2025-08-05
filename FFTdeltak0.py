@@ -165,7 +165,7 @@ def FFT_for_G(eta_bar, u):
 Delta = FFT_for_G(etabar, urange)
 
 
-# testin if Delta is delta function
+# testing if Delta is delta function
 integral1 = sum(Delta)*(k0range[1]-k0range[0])
 print('Delta(k_0, etabar) integral =', integral1)
 k0Delta = Delta*k0range
