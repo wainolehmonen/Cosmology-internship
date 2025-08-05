@@ -8,4 +8,6 @@ Kesäharjoittelu koodia
 
 -FFTdeltamultiplotti.py:ssä eta*k_0 funktiona voi plotata samaan kuvaajaan usealla etabar arvolla
 
+-FFTdeltak0_v2.py on muuten sama kuin FFTdeltak0.py, mutta plottaukselle on oma funktio -> useita figureita eri etabareilla
+
 -momenttienplottaus.py on vaiheessa

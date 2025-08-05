@@ -165,6 +165,7 @@ def FFT_for_G(eta_bar, u):
 Delta = FFT_for_G(etabar, urange)
 
 
+# TODO: understand what is going on here, is it dirac delta?
 # testing if Delta is delta function
 integral1 = sum(Delta)*(k0range[1]-k0range[0])
 print('Delta(k_0, etabar) integral =', integral1)
@@ -172,9 +173,6 @@ k0Delta = Delta*k0range
 integral2 = sum(k0Delta)*(k0range[1]-k0range[0])
 print('k_0*Delta(k_0, etabar) integral =', integral2)
 
-
-# TODO: change plotting to a function (as in other code)
-# then it can be given multiple eta_bars, figure out the plt color change
 
 plt.figure(figsize=(11, 6))
 

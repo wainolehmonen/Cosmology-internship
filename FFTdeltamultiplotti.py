@@ -115,10 +115,12 @@ def Deltaplot(etas):
     plt.figure(figsize=(11, 6))
     plt.axvline(x=0, c='gray')
     plt.axhline(y=0, c='gray')
+    colors = iter(plt.cm.rainbow(np.linspace(0, 1, len(etas))))
     for i in range(len(etas)):
+        c = next(colors)
         Delta = FFT_for_G(etas[i], urange)
         benchmark_integral = Delta_benchmark_integral(etas[i]*k, etas[i])
-        plt.plot(etak0range, Delta,
+        plt.plot(etak0range, Delta, c=c,
                  label=r'$\bar \eta = {a}$'.format(a=etas[i]))
         plt.axvline(-etas[i]*k, c='b', linestyle='dashed')
         plt.plot(-etas[i]*k, benchmark_integral, 'bD')
@@ -132,4 +134,4 @@ def Deltaplot(etas):
     plt.show()
 
 
-Deltaplot([-1, -3])  # input etabar values (close together for good plot)
+Deltaplot([-1, -0.3])  # input etabar values (close together for good plot)
