@@ -10,4 +10,4 @@ Kesäharjoittelu koodia
 
 -FFTdeltak0_v2.py on muuten sama kuin FFTdeltak0.py, mutta plottaukselle on oma funktio -> useita figureita eri etabareilla
 
--momenttienplottaus.py on vaiheessa
+-momenttienplottaus.py on vaiheessa (selvitettävä deltafunktion esitys äärellisessä laatikossa)

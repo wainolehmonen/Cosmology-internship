@@ -10,35 +10,35 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random
 
-# --SETTINGS--
+# ---SETTINGS---
 # constants (m/H <= 3/2 for real nu; for plotting pick m/H = small like 0.01)
 m = 0.01  # mass of field
 H = 1  # Hubble rate
 d = 4  # dimension
 
 k = 2  # norm of k bar in [0, inf)
-etabar = -0.1  # mean of conformal times 1/2(eta' + eta) in (-inf, 0)
-# -k*etabar > 1 subhorizon
-# -k*etabar < 1 superhorizon
+eta = -0.1  # (etabar) mean of conformal times 1/2(eta' + eta) in (-inf, 0)
+# -k*eta > 1 subhorizon
+# -k*eta < 1 superhorizon
 
 # number of data points for plotting and FFT (FFT matrix is N by N)
 N = 1000
 
-L = 15  # limits for k0 (when etabar = -1)
+L = 15  # limits for k0 (when eta = -1)
 
-# ------------
+# -------------
 
 
 nu = np.sqrt(((d - 1)/2)**2 - (m/H)**2)
 
-print('Scale factor a =', -1/(etabar*H))
+print('Scale factor a =', -1/(eta*H))
 
 # integration variable u = Delta_eta/(2eta_bar) runs over (-1, 1)
 epsilon = 1e-10  # small threshold in order to avoid limit points (nan)
 urange = np.linspace(-1 + epsilon, 1 - epsilon, N)
 
 # for variable k0
-k0range = np.linspace(L/etabar + k, -L/etabar + k, N)
+k0range = np.linspace(L/eta + k, -L/eta + k, N)
 
 
 def integrand_for_Delta(k_0, eta_bar, u):
@@ -90,14 +90,13 @@ def Delta_benchmark_integral(k_0, eta_bar):
         - 1j*sc.integrate.quad(I_Im, -1, 1)[0]
 
 
-integral_k = Delta_benchmark_integral(k, etabar)
+integral_k = Delta_benchmark_integral(k, eta)
 # print(benchmark_integral)
 
-
-integrand_k = integrand_for_Delta(k, etabar, urange)  # integrand at points u
+integrand_k = integrand_for_Delta(k, eta, urange)  # integrand at points u
 # # this benchmark (for FFT) uses same u grid as the FFT (compare with scipy)
-# benchmark_integral1 = sum(integrand_k)*(urange[1]-urange[0])
-# print(benchmark_integral1)
+# benchmark_integral = sum(integrand_k)*(urange[1]-urange[0])
+# print(benchmark_integral)
 
 
 def plot_integrand(k_0, eta_bar):
@@ -130,7 +129,7 @@ def plot_integrand(k_0, eta_bar):
 # input matrix for FFT
 x1, y1 = np.meshgrid(urange, k0range)
 # FFT matrix
-FFTgrid = np.exp(-1j*x1*2*y1*etabar)*(urange[1]-urange[0])
+FFTgrid = np.exp(-1j*x1*2*y1*eta)*(urange[1] - urange[0])
 
 
 # FFT using the above defined grid
@@ -160,14 +159,14 @@ def FFT_for_G(eta_bar, u):
 
 
 # Plotting the FFT
-Delta = FFT_for_G(etabar, urange)
+Delta = FFT_for_G(eta, urange)
 
 
 # TODO: understand what is going on here, is it dirac delta?
-integral1 = (sum(Delta)*(k0range[1]-k0range[0])).real  # has small imag error
+integral1 = (sum(Delta)*(k0range[1] - k0range[0])).real  # has small imag error
 print('Delta(k_0, etabar) integral =', integral1)
 k0Delta = Delta*k0range
-integral2 = (sum(k0Delta)*(k0range[1]-k0range[0])).real  # has small imag error
+integral2 = (sum(k0Delta)*(k0range[1] - k0range[0])).real
 print('k_0*Delta(k_0, etabar) integral =', integral2)
 
 
@@ -176,7 +175,7 @@ plt.figure(figsize=(11, 6))
 plt.plot(k0range, Delta, 'r', label=r'$\Delta^<_\bar{k}(k_0, \bar{\eta})$ FFT')
 
 plt.title(r'$\Delta^<_\bar k(k_0, \bar \eta)$ as a function of $k_0$'
-          r' when $\bar \eta={a},\ k={b}$'.format(a=etabar, b=k))
+          r' when $\bar \eta={a},\ k={b}$'.format(a=eta, b=k))
 plt.xlabel(r'$k_0 \in \left[k + L/\bar\eta, k - L/\bar\eta \right],\ L={a}$'
            .format(a=L))
 
@@ -190,7 +189,7 @@ plt.plot(k, integral_k, 'bD',
 # benchmarking for FFT
 for i in range(5):
     randk0 = random.choice(k0range)
-    plt.plot(randk0, Delta_benchmark_integral(randk0, etabar), 'go')
+    plt.plot(randk0, Delta_benchmark_integral(randk0, eta), 'go')
 
 plt.legend(loc='upper left', fontsize=13, shadow=True)
 plt.grid()

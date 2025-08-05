@@ -40,6 +40,7 @@ urange = np.linspace(-1 + epsilon, 1 - epsilon, N)
 
 # for variable k0
 k0range = np.linspace(L/etabar + k, -L/etabar + k, N)
+# TODO: FFT input, k0range depend on etabar, remove constant etabar and fix
 
 
 def integrand_for_Delta(k_0, eta_bar, u):
@@ -147,7 +148,7 @@ def FFT_for_G(eta_bar, u, FFTmatrix):
     return np.pi/2*H**2*eta_bar**4*np.matmul(FFTmatrix, A)
 
 
-def Deltaplotting(etas):
+def plot_Delta(etas):
     """
     Plots Delta for given etas, own figure for each eta
 
@@ -192,4 +193,4 @@ def Deltaplotting(etas):
         plt.show()
 
 
-Deltaplotting([-1, -0.3])  # input etabar values
+plot_Delta([-1, -0.3])  # input etabar values
