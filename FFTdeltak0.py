@@ -16,7 +16,7 @@ m = 0.01  # mass of field
 H = 1  # Hubble rate
 d = 4  # dimension
 
-k = 2  # norm of k bar in [0, inf)
+k = 4  # norm of k bar in [0, inf)
 eta = -0.1  # (etabar) mean of conformal times 1/2(eta' + eta) in (-inf, 0)
 # -k*eta > 1 subhorizon
 # -k*eta < 1 superhorizon
@@ -26,7 +26,7 @@ N = 1000
 
 L = 15  # limits for k0 (when eta = -1)
 
-# -------------
+# --------------
 
 
 nu = np.sqrt(((d - 1)/2)**2 - (m/H)**2)
@@ -162,7 +162,7 @@ def FFT_for_G(eta_bar, u):
 Delta = FFT_for_G(eta, urange)
 
 
-# TODO: understand what is going on here, is it dirac delta?
+# TODO: understand what is going on here, is it dirac delta? (NO?)
 integral1 = (sum(Delta)*(k0range[1] - k0range[0])).real  # has small imag error
 print('Delta(k_0, etabar) integral =', integral1)
 k0Delta = Delta*k0range
@@ -179,7 +179,7 @@ plt.title(r'$\Delta^<_\bar k(k_0, \bar \eta)$ as a function of $k_0$'
 plt.xlabel(r'$k_0 \in \left[k + L/\bar\eta, k - L/\bar\eta \right],\ L={a}$'
            .format(a=L))
 
-plt.axvline(0, c='gray')  # comment out when |etabar| is large (out of range)
+plt.axvline(0, c='gray')  # comment out when |eta| >> 1 (out of range)
 plt.axhline(0, c='gray')
 
 plt.axvline(k, c='b', linestyle='--')

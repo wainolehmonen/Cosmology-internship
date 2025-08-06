@@ -41,7 +41,7 @@ urange = np.linspace(-1 + epsilon, 1 - epsilon, N)
 # for variable k0
 k0range = np.linspace(L/etabar + k, -L/etabar + k, N)
 # TODO: FFT input, k0range depend on etabar, remove constant etabar and fix
-# no smart way to do that
+# no smart way to do that -> implement good changes from this code and delete
 
 
 def integrand_for_Delta(k_0, eta_bar, u):
