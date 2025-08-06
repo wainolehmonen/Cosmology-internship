@@ -27,7 +27,7 @@ N = 1000
 
 L = 15  # limits for k0 (when etabar = -1)
 
-# --------------
+# ---------------
 
 
 nu = np.sqrt(((d - 1)/2)**2 - (m/H)**2)
@@ -41,6 +41,7 @@ urange = np.linspace(-1 + epsilon, 1 - epsilon, N)
 # for variable k0
 k0range = np.linspace(L/etabar + k, -L/etabar + k, N)
 # TODO: FFT input, k0range depend on etabar, remove constant etabar and fix
+# no smart way to do that
 
 
 def integrand_for_Delta(k_0, eta_bar, u):
@@ -173,10 +174,11 @@ def plot_Delta(etas):
 
         plt.title(r'$\Delta^<_\bar k(k_0, \bar \eta)$ as a function of $k_0$'
                   r' when $\bar \eta={a},\ k={b}$'.format(a=etas[i], b=k))
-        plt.xlabel(r'$k_0 \in \left[k + L/\bar\eta, k - L/\bar\eta \right],\ L={a}$'
-                   .format(a=L))
+        plt.xlabel(
+            r'$k_0 \in \left[k + L/\bar\eta, k - L/\bar\eta \right],\ L={a}$'
+            .format(a=L))
 
-        plt.axvline(0, c='gray')  # comment out when |etabar| is large (out of range)
+        plt.axvline(0, c='gray')  # comment out when |eta| is large
         plt.axhline(0, c='gray')
 
         plt.axvline(k, c='b', linestyle='--')

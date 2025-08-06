@@ -10,28 +10,34 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random
 
+# TODO: make all the codes similar i.e. update changes to all codes, remove v2
+
+# ---SETTINGS---
 
 # constants (m/H <= 3/2 for real nu, for plotting pick m/H = small like 0.01)
 m = 0.01  # mass of field
 H = 1  # Hubble rate
 d = 4  # dimension
 
-nu = np.sqrt(((d - 1)/2)**2 - (m/H)**2)
-
 k = 2  # norm of k bar in [0, inf)
 etabar = -1  # mean of conformal times 1/2(eta' + eta) in (-inf, 0)
 
-
 # number of data points for plotting and FFT
 N = 1000
+
+L = 15  # limits for k0etabar
+
+# --------------
+
+nu = np.sqrt(((d - 1)/2)**2 - (m/H)**2)
+
+print('Scale factor a =', -1/(etabar*H))
+
 # integration variable u = Delta_eta/(2eta_bar) runs over (-1, 1)
 epsilon = 1e-10  # small threshold in order to avoid limit points (nan)
 urange = np.linspace(-1 + epsilon, 1 - epsilon, N)
 
-# for variable k0
-L = 15  # limits for k0etabar
 etak0range = np.linspace(-k*etabar - L, -k*etabar + L, N)
-# number of data points can be adjusted (then FFT matrix is no longer square)
 
 
 def integrand_for_Delta(k0_eta_bar, eta_bar, u):
@@ -60,8 +66,23 @@ def integrand_for_Delta(k0_eta_bar, eta_bar, u):
     return np.pi/2*H**2*eta_bar**4*c*hankel_a*hankel_b
 
 
-# Integrals using scipy quad, for variable etak0
 def Delta_benchmark_integral(eta_k_0, eta_bar):
+    """
+    Uses scipy quad to evaluate the integral for Delta at given points
+
+    Parameters
+    ----------
+    k_0 : float
+        frequency
+    eta_bar : array-like
+        mean of conformal times
+
+    Returns
+    -------
+    array-like
+        Delta at given points
+
+    """
     I_Re = lambda u: integrand_for_Delta(eta_k_0, eta_bar, u).real
     I_Im = lambda u: integrand_for_Delta(eta_k_0, eta_bar, u).imag
     return sc.integrate.quad(I_Re, -1, 1)[0] \
@@ -104,11 +125,11 @@ def FFT_for_G(eta_bar, u):
 
 # Plotting the FFT
 Delta = FFT_for_G(etabar, -urange)
-# print(Delta)
+
 
 plt.figure(figsize=(11, 6))
 
-plt.axvline(0, c='gray')  # remove when |etabar| >> 1 (out of plot range)
+plt.axvline(0, c='gray')  # remove when |eta| >> 1 (out of plot range)
 plt.axhline(0, c='gray')
 
 plt.plot(etak0range, Delta, 'r', label=r'$\Delta^<_\bar k(k_0\bar{\eta})$ FFT')
