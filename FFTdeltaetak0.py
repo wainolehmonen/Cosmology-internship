@@ -19,7 +19,7 @@ H = 1  # Hubble rate
 d = 4  # dimension
 
 k = 2  # norm of k bar in [0, inf)
-eta = -1  # (etabar) mean of conformal times 1/2(eta' + eta) in (-inf, 0)
+eta = -0.4  # (etabar) mean of conformal times 1/2(eta' + eta) in (-inf, 0)
 
 # number of data points for plotting and FFT
 N = 1000
@@ -125,7 +125,6 @@ def FFT_for_G(eta_bar, u):
 
 # Plotting the FFT
 Delta = FFT_for_G(eta, -urange)
-
 
 plt.figure(figsize=(11, 6))
 

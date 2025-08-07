@@ -18,15 +18,15 @@ m = 0.01  # mass of field
 H = 1  # Hubble rate
 d = 4  # dimension
 
-k = 2  # norm of k bar in [0, inf)
-eta = -1  # (etabar) mean of conformal times 1/2(eta' + eta) in (-inf, 0)
+k = 5  # norm of k bar in [0, inf)
+eta = -0.1  # (etabar) mean of conformal times 1/2(eta' + eta) in (-inf, 0)
 # -k*eta > 1 subhorizon
 # -k*eta < 1 superhorizon
 
 # number of data points for plotting and FFT (FFT matrix is N by N)
-N = 1000
+N = 4000
 
-L = 15  # limits for k0 (when eta = -1)
+L = 100  # limits for k0 (when eta = -1)
 
 # --------------
 
@@ -164,35 +164,61 @@ def FFT_for_G(eta_bar, u):
 Delta = FFT_for_G(eta, urange)
 
 
-# TODO: understand what is going on here, is it dirac delta? (NO?)
-integral1 = (sum(Delta)*(k0range[1] - k0range[0])).real  # has small imag error
-print('Delta(k_0, etabar) integral =', integral1)
-k0Delta = Delta*k0range
-integral2 = (sum(k0Delta)*(k0range[1] - k0range[0])).real
-print('k_0*Delta(k_0, etabar) integral =', integral2)
-
-
 plt.figure(figsize=(11, 6))
 
 plt.plot(k0range, Delta, 'r', label=r'$\Delta^<_\bar{k}(k_0, \bar{\eta})$ FFT')
 
 plt.title(r'$\Delta^<_\bar k(k_0, \bar \eta)$ as a function of $k_0$'
-          r' when $\bar \eta={a},\ k={b}$'.format(a=eta, b=k))
+          r' when $\bar \eta={a},\ k={b}$'.format(a=eta, b=k), fontsize=14)
 plt.xlabel(r'$k_0 \in \left[k + L/\bar\eta, k - L/\bar\eta \right],\ L={a}$'
-           .format(a=L))
+           .format(a=L), fontsize=13)
 
-#plt.axvline(0, c='gray')  # comment out when |eta| >> 1 (out of range)
+plt.axvline(0, c='gray')  # comment out when |eta| >> 1 (out of range)
 plt.axhline(0, c='gray')
 
 plt.axvline(k, c='b', linestyle='--')
 plt.plot(k, integral_k, 'bD',
-         label=r'$\Delta^<_\bar{k}(k, \bar{\eta})$')
+         label=r'$\Delta^<_\bar{k}(k_0=k, \bar{\eta})$')
 
 # benchmarking for FFT
 for i in range(5):
     randk0 = random.choice(k0range)
     plt.plot(randk0, Delta_benchmark_integral(randk0, eta), 'go')
 
-plt.legend(loc='upper left', fontsize=13, shadow=True)
+plt.legend(loc='upper left', fontsize=14, shadow=True)
+plt.grid()
+plt.show()
+
+
+# TODO: vihkosta löytyy jutut
+
+print('Deltan maksimikohta k_0 =', k0range[np.argmax(Delta)])
+newk0range = k0range[0:2*np.argmax(Delta)]
+newDelta = Delta[0:2*np.argmax(Delta)].real
+N = sum(newDelta).real*(newk0range[1] - newk0range[0])
+print('N =', N)
+omega_k = sum(newk0range*newDelta)*(newk0range[1] - newk0range[0])/N
+print('omega_k =', omega_k)
+
+
+plt.figure(figsize=(11, 6))
+
+plt.plot(newk0range, newDelta, 'r',
+         label=r'$\Delta^<_\bar{k}(k_0, \bar{\eta})$ FFT')
+
+plt.title(r'Symmetric around max, $\Delta^<_\bar k(k_0, \bar \eta)$ '
+          'as a function of $k_0$'
+          r' when $\bar \eta={a},\ k={b}$'.format(a=eta, b=k), fontsize=14)
+plt.xlabel(r'$k_0 \in \left[\max - \lambda, \max + \lambda \right],\ L={a}$'
+           .format(a=L), fontsize=13)
+
+plt.axvline(0, c='gray')  # comment out when |eta| >> 1 (out of range)
+plt.axhline(0, c='gray')
+
+plt.axvline(k, c='b', linestyle='--')
+plt.plot(k, integral_k, 'bD',
+         label=r'$\Delta^<_\bar{k}(k_0=k, \bar{\eta})$')
+
+plt.legend(loc='upper left', fontsize=14, shadow=True)
 plt.grid()
 plt.show()
