@@ -11,6 +11,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
+# ---SETTINGS---
+
 # constants (m/H <= 3/2 for real nu; for plotting pick m/H = small like 0.01)
 m = 0.01  # mass of field
 H = 1  # Hubble rate
@@ -22,15 +24,18 @@ k = 1  # norm of k bar in [0, inf)
 
 # number of data points for plotting and FFT
 N = 1000
+
+# limits for k0etabar
+L = 10
+R = 20
+
+# --------------
+
 # integration variable u = Delta_eta/(2eta_bar) runs over (-1, 1)
 epsilon = 1e-10  # small threshold in order to avoid limit points (nan)
 urange = np.linspace(-1 + epsilon, 1 - epsilon, N)
 
-# for variable k0
-L = 10  # limits for k0etabar
-R = 20
 etak0range = np.linspace(-L, R, N)
-# number of data points can be adjusted (then FFT matrix is no longer square)
 
 
 def integrand_for_Delta(u, k0_eta_bar, eta_bar):
@@ -62,6 +67,22 @@ def integrand_for_Delta(u, k0_eta_bar, eta_bar):
 # Integral using scipy quad (real part (imaginary part is zero))
 # for variable etak0
 def Delta_benchmark_integral(eta_k_0, eta_bar):
+    """
+    Uses scipy quad to evaluate the integral for Delta at given points
+
+    Parameters
+    ----------
+    k_0 : float
+        frequency
+    eta_bar : float
+        mean of conformal times
+
+    Returns
+    -------
+    float
+        Delta at given points
+
+    """
     I_Re = sc.integrate.quad(integrand_for_Delta, -1, 1,
                              args=(eta_k_0, eta_bar))
     return I_Re[0]
