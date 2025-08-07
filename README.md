@@ -8,6 +8,4 @@ Kesäharjoittelu koodia
 
 -FFTdeltamultiplotti.py:ssä $\bar{\eta}k_0$ funktiona voi plotata samaan kuvaajaan usealla $\bar{\eta}$ arvolla
 
--FFTdeltak0_v2.py on muuten sama kuin FFTdeltak0.py, mutta plottaukselle on oma funktio (EI OIKEIN TOIMI LUONNOLLISESTI ÄLÄ KÄYTÄ)
-
 -momenttienplottaus.py on vaiheessa (selvitettävä deltafunktion esitys äärellisessä laatikossa)
