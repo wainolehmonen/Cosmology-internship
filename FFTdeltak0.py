@@ -10,7 +10,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random
 
+
 # ---SETTINGS---
+
 # constants (m/H <= 3/2 for real nu; for plotting pick m/H = small like 0.01)
 m = 0.01  # mass of field
 H = 1  # Hubble rate

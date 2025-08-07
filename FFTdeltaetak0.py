@@ -10,7 +10,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random
 
-# TODO: make all the codes similar i.e. update changes to all codes
 
 # ---SETTINGS---
 
@@ -28,6 +27,7 @@ N = 1000
 L = 15  # limits for k0etabar
 
 # --------------
+
 
 nu = np.sqrt(((d - 1)/2)**2 - (m/H)**2)
 

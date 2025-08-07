@@ -18,8 +18,6 @@ m = 0.01  # mass of field
 H = 1  # Hubble rate
 d = 4  # dimension
 
-nu = np.sqrt(((d - 1)/2)**2 - (m/H)**2)
-
 k = 1  # norm of k bar in [0, inf)
 
 # number of data points for plotting and FFT
@@ -30,6 +28,9 @@ L = 10
 R = 20
 
 # --------------
+
+
+nu = np.sqrt(((d - 1)/2)**2 - (m/H)**2)
 
 # integration variable u = Delta_eta/(2eta_bar) runs over (-1, 1)
 epsilon = 1e-10  # small threshold in order to avoid limit points (nan)
@@ -121,7 +122,7 @@ def FFT_for_G(eta_bar, u):
 
 def Deltaplot(etas):
     """
-    Plots Delta for given etabars
+    Plots Delta and prints scale factors for given etabars
 
     Parameters
     ----------
@@ -138,6 +139,8 @@ def Deltaplot(etas):
     plt.axhline(y=0, c='gray')
     colors = iter(plt.cm.rainbow(np.linspace(0, 1, len(etas))))
     for i in range(len(etas)):
+        print('For eta = {m} scale factor a ='.format(m=etas[i]),
+              -1/(etas[i]*H))
         c = next(colors)
         Delta = FFT_for_G(etas[i], urange)
         benchmark_integral = Delta_benchmark_integral(etas[i]*k, etas[i])
