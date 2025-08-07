@@ -18,8 +18,8 @@ m = 0.01  # mass of field
 H = 1  # Hubble rate
 d = 4  # dimension
 
-k = 4  # norm of k bar in [0, inf)
-eta = -0.1  # (etabar) mean of conformal times 1/2(eta' + eta) in (-inf, 0)
+k = 2  # norm of k bar in [0, inf)
+eta = -1  # (etabar) mean of conformal times 1/2(eta' + eta) in (-inf, 0)
 # -k*eta > 1 subhorizon
 # -k*eta < 1 superhorizon
 
@@ -160,7 +160,7 @@ def FFT_for_G(eta_bar, u):
     return np.pi/2*H**2*eta_bar**4*np.matmul(FFTgrid, A)
 
 
-# Plotting the FFT
+# Delta at points k0range
 Delta = FFT_for_G(eta, urange)
 
 
@@ -181,7 +181,7 @@ plt.title(r'$\Delta^<_\bar k(k_0, \bar \eta)$ as a function of $k_0$'
 plt.xlabel(r'$k_0 \in \left[k + L/\bar\eta, k - L/\bar\eta \right],\ L={a}$'
            .format(a=L))
 
-plt.axvline(0, c='gray')  # comment out when |eta| >> 1 (out of range)
+#plt.axvline(0, c='gray')  # comment out when |eta| >> 1 (out of range)
 plt.axhline(0, c='gray')
 
 plt.axvline(k, c='b', linestyle='--')

@@ -24,8 +24,8 @@ k = 1  # norm of k bar in [0, inf)
 N = 1000
 
 # limits for k0etabar
-L = 10
-R = 20
+L = 8
+R = 10
 
 # --------------
 
@@ -146,8 +146,8 @@ def Deltaplot(etas):
         benchmark_integral = Delta_benchmark_integral(etas[i]*k, etas[i])
         plt.plot(etak0range, Delta, c=c,
                  label=r'$\bar \eta = {a}$'.format(a=etas[i]))
-        plt.axvline(-etas[i]*k, c='b', linestyle='dashed')
-        plt.plot(-etas[i]*k, benchmark_integral, 'bD')
+        plt.axvline(-etas[i]*k, c=c, linestyle='dashed')
+        plt.plot(-etas[i]*k, benchmark_integral, 'kD')
     plt.title(r'$\Delta^<_\bar k(k_0, \bar \eta)$ as a function of '
               r'$k_0\bar \eta$ when $k={a}$'.format(a=k),
               fontsize=14)
@@ -158,4 +158,5 @@ def Deltaplot(etas):
     plt.show()
 
 
-Deltaplot([-1, -0.3])  # input etabar values (close together for good plot)
+# input etabar values (close together for good plot)
+Deltaplot([-0.2, -0.4, -0.6])
