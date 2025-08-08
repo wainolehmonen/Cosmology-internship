@@ -239,7 +239,9 @@ def deltaDelta(eta_bar, D):
     # k0range_cut = k0range_cutright[leftlimitindex:]  # plottausta varten
     Delta_cutright = newDelta[:rightlimitindex]
     Delta_cut = Delta_cutright[leftlimitindex:]
-    return sum(Delta_cut)*(k0range[1] - k0range[0])/M
+    return sum(Delta_cut)*(k0range[1] - k0range[0])
+
+# return/M for normed
 
 
 Drange = np.linspace(0, newk0range[-1], num=1000)
@@ -249,6 +251,15 @@ deltajono = np.empty(len(Drange))
 for i in range(len(Drange)):
     deltajono[i] = deltaDelta(eta, Drange[i])
 
+plt.figure(figsize=(11, 6))
 
-plt.plot(Drange, deltajono)
+# plt.axhline(deltajono[-1], c='r', linestyle='--')
+plt.plot(Drange, deltajono, c='g')
+
+plt.ylabel(r'$\delta_\Delta$', fontsize=13)
+plt.xlabel(r'$\Delta$', fontsize=13)
+plt.title(r'$\delta_\Delta$ when $\bar \eta={a},\ k={b}$'.format(a=eta, b=k),
+          fontsize=14)
+
 plt.grid()
+plt.show()
