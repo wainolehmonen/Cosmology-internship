@@ -190,14 +190,15 @@ plt.grid()
 plt.show()
 
 
-# TODO: vihkosta löytyy jutut
+# TODO: vihkosta löytyy jutut TÄSTÄ ALASPÄIN ON TESTAILUA
+# MUOKKAA KOODI LUETTAVAKSI
 
 print('Deltan maksimikohta k_0 =', k0range[np.argmax(Delta)])
 newk0range = k0range[0:2*np.argmax(Delta)]
 newDelta = Delta[0:2*np.argmax(Delta)].real
-N = sum(newDelta).real*(newk0range[1] - newk0range[0])
-print('N =', N)
-omega_k = sum(newk0range*newDelta)*(newk0range[1] - newk0range[0])/N
+M = sum(newDelta)*(newk0range[1] - newk0range[0])
+print('N =', M)
+omega_k = sum(newk0range*newDelta)*(newk0range[1] - newk0range[0])/M
 print('omega_k =', omega_k)
 
 
@@ -209,8 +210,8 @@ plt.plot(newk0range, newDelta, 'r',
 plt.title(r'Symmetric around max, $\Delta^<_\bar k(k_0, \bar \eta)$ '
           'as a function of $k_0$'
           r' when $\bar \eta={a},\ k={b}$'.format(a=eta, b=k), fontsize=14)
-plt.xlabel(r'$k_0 \in \left[\max - \lambda, \max + \lambda \right],\ L={a}$'
-           .format(a=L), fontsize=13)
+plt.xlabel(r'$k_0 \in \left[\max - \lambda, \max + \lambda \right]$',
+           fontsize=13)
 
 plt.axvline(0, c='gray')  # comment out when |eta| >> 1 (out of range)
 plt.axhline(0, c='gray')
@@ -222,3 +223,32 @@ plt.plot(k, integral_k, 'bD',
 plt.legend(loc='upper left', fontsize=14, shadow=True)
 plt.grid()
 plt.show()
+
+
+def deltaDelta(eta_bar, D):
+    Delta = FFT_for_G(eta_bar, urange)
+    newk0range = k0range[0:2*np.argmax(Delta)]
+    newDelta = Delta[0:2*np.argmax(Delta)].real
+    M = sum(newDelta)*(newk0range[1] - newk0range[0])
+    omega_k = sum(newk0range*newDelta)*(newk0range[1] - newk0range[0])/M
+    leftlimitindex = np.argmin(abs(newk0range - (omega_k - D)))
+    rightlimitindex = np.argmin(abs(newk0range - (omega_k + D)))
+    k0range_cutright = newk0range[:rightlimitindex]
+    k0range_cut = k0range_cutright[leftlimitindex:]
+    Delta_cutright = newDelta[:rightlimitindex]
+    Delta_cut = Delta_cutright[leftlimitindex:]
+    return sum(Delta_cut)*(k0range[1] - k0range[0])/M
+
+
+
+Drange = np.linspace(1, 500, num=100)
+
+deltajono = np.empty(len(Drange))
+for i in range(len(Drange)):
+    deltajono[i] = deltaDelta(eta, Drange[i])
+
+
+plt.plot(Drange, deltajono)
+plt.grid()
+
+# yes! funktio deltaDelta taitaa toimia
