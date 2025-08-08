@@ -19,14 +19,14 @@ H = 1  # Hubble rate
 d = 4  # dimension
 
 k = 5  # norm of k bar in [0, inf)
-eta = -0.1  # (etabar) mean of conformal times 1/2(eta' + eta) in (-inf, 0)
+eta = -1  # (etabar) mean of conformal times 1/2(eta' + eta) in (-inf, 0)
 # -k*eta > 1 subhorizon
 # -k*eta < 1 superhorizon
 
 # number of data points for plotting and FFT (FFT matrix is N by N)
 N = 4000
 
-L = 100  # limits for k0 (when eta = -1)
+L = 50  # limits for k0 (when eta = -1)
 
 # --------------
 
@@ -193,55 +193,57 @@ plt.show()
 # TODO: vihkosta löytyy jutut TÄSTÄ ALASPÄIN ON TESTAILUA
 # MUOKKAA KOODI LUETTAVAKSI
 
-print('Deltan maksimikohta k_0 =', k0range[np.argmax(Delta)])
+# print('Deltan maksimikohta k_0 =', k0range[np.argmax(Delta)])
+# newk0range = k0range[0:2*np.argmax(Delta)]
+# newDelta = Delta[0:2*np.argmax(Delta)].real
+# M = sum(newDelta)*(newk0range[1] - newk0range[0])
+# print('N =', M)
+# omega_k = sum(newk0range*newDelta)*(newk0range[1] - newk0range[0])/M
+# print('omega_k =', omega_k)
+
+
+# plt.figure(figsize=(11, 6))
+
+# plt.plot(newk0range, newDelta, 'r',
+#          label=r'$\Delta^<_\bar{k}(k_0, \bar{\eta})$ FFT')
+
+# plt.title(r'Symmetric around max, $\Delta^<_\bar k(k_0, \bar \eta)$ '
+#           'as a function of $k_0$'
+#           r' when $\bar \eta={a},\ k={b}$'.format(a=eta, b=k), fontsize=14)
+# plt.xlabel(r'$k_0 \in \left[\max - \lambda, \max + \lambda \right]$',
+#            fontsize=13)
+
+# plt.axvline(0, c='gray')  # comment out when |eta| >> 1 (out of range)
+# plt.axhline(0, c='gray')
+
+# plt.axvline(k, c='b', linestyle='--')
+# plt.plot(k, integral_k, 'bD',
+#          label=r'$\Delta^<_\bar{k}(k_0=k, \bar{\eta})$')
+
+# plt.legend(loc='upper left', fontsize=14, shadow=True)
+# plt.grid()
+# plt.show()
+
+
+# Delta = FFT_for_G(eta, urange)
 newk0range = k0range[0:2*np.argmax(Delta)]
-newDelta = Delta[0:2*np.argmax(Delta)].real
-M = sum(newDelta)*(newk0range[1] - newk0range[0])
-print('N =', M)
-omega_k = sum(newk0range*newDelta)*(newk0range[1] - newk0range[0])/M
-print('omega_k =', omega_k)
-
-
-plt.figure(figsize=(11, 6))
-
-plt.plot(newk0range, newDelta, 'r',
-         label=r'$\Delta^<_\bar{k}(k_0, \bar{\eta})$ FFT')
-
-plt.title(r'Symmetric around max, $\Delta^<_\bar k(k_0, \bar \eta)$ '
-          'as a function of $k_0$'
-          r' when $\bar \eta={a},\ k={b}$'.format(a=eta, b=k), fontsize=14)
-plt.xlabel(r'$k_0 \in \left[\max - \lambda, \max + \lambda \right]$',
-           fontsize=13)
-
-plt.axvline(0, c='gray')  # comment out when |eta| >> 1 (out of range)
-plt.axhline(0, c='gray')
-
-plt.axvline(k, c='b', linestyle='--')
-plt.plot(k, integral_k, 'bD',
-         label=r'$\Delta^<_\bar{k}(k_0=k, \bar{\eta})$')
-
-plt.legend(loc='upper left', fontsize=14, shadow=True)
-plt.grid()
-plt.show()
 
 
 def deltaDelta(eta_bar, D):
-    Delta = FFT_for_G(eta_bar, urange)
-    newk0range = k0range[0:2*np.argmax(Delta)]
     newDelta = Delta[0:2*np.argmax(Delta)].real
     M = sum(newDelta)*(newk0range[1] - newk0range[0])
     omega_k = sum(newk0range*newDelta)*(newk0range[1] - newk0range[0])/M
     leftlimitindex = np.argmin(abs(newk0range - (omega_k - D)))
     rightlimitindex = np.argmin(abs(newk0range - (omega_k + D)))
-    k0range_cutright = newk0range[:rightlimitindex]
-    k0range_cut = k0range_cutright[leftlimitindex:]
+    # k0range_cutright = newk0range[:rightlimitindex]
+    # k0range_cut = k0range_cutright[leftlimitindex:]  # plottausta varten
     Delta_cutright = newDelta[:rightlimitindex]
     Delta_cut = Delta_cutright[leftlimitindex:]
     return sum(Delta_cut)*(k0range[1] - k0range[0])/M
 
 
-
-Drange = np.linspace(1, 500, num=100)
+Drange = np.linspace(0, newk0range[-1], num=1000)
+# D pienempi kuin newrange rajat
 
 deltajono = np.empty(len(Drange))
 for i in range(len(Drange)):
@@ -250,5 +252,3 @@ for i in range(len(Drange)):
 
 plt.plot(Drange, deltajono)
 plt.grid()
-
-# yes! funktio deltaDelta taitaa toimia
