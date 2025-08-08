@@ -19,7 +19,7 @@ H = 1  # Hubble rate
 d = 4  # dimension
 
 k = 5  # norm of k bar in [0, inf)
-eta = -1  # (etabar) mean of conformal times 1/2(eta' + eta) in (-inf, 0)
+eta = -0.1  # (etabar) mean of conformal times 1/2(eta' + eta) in (-inf, 0)
 # -k*eta > 1 subhorizon
 # -k*eta < 1 superhorizon
 
@@ -227,6 +227,7 @@ plt.show()
 
 # Delta = FFT_for_G(eta, urange)
 newk0range = k0range[0:2*np.argmax(Delta)]
+# max of Delta is now in middle of k0range
 
 
 def deltaDelta(eta_bar, D):
@@ -239,7 +240,7 @@ def deltaDelta(eta_bar, D):
     # k0range_cut = k0range_cutright[leftlimitindex:]  # plottausta varten
     Delta_cutright = newDelta[:rightlimitindex]
     Delta_cut = Delta_cutright[leftlimitindex:]
-    return sum(Delta_cut)*(k0range[1] - k0range[0])
+    return sum(Delta_cut)*(k0range[1] - k0range[0])/M
 
 # return/M for normed
 
@@ -257,7 +258,7 @@ plt.figure(figsize=(11, 6))
 plt.plot(Drange, deltajono, c='g')
 
 plt.ylabel(r'$\delta_\Delta$', fontsize=13)
-plt.xlabel(r'$\Delta$', fontsize=13)
+plt.xlabel(r'$\Delta$ in units of $k_0$', fontsize=13)
 plt.title(r'$\delta_\Delta$ when $\bar \eta={a},\ k={b}$'.format(a=eta, b=k),
           fontsize=14)
 
