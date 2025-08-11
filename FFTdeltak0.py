@@ -19,9 +19,6 @@ H = 1  # Hubble rate
 d = 4  # dimension
 
 k = 5  # norm of k bar in [0, inf)
-# eta = -0.1  # (etabar) mean of conformal times 1/2(eta' + eta) in (-inf, 0)
-# -k*eta > 1 subhorizon
-# -k*eta < 1 superhorizon
 
 # number of data points for plotting and FFT (FFT matrix is N by N)
 N = 1000
@@ -32,8 +29,6 @@ L = 50  # limits for k0 (when eta = -1)
 
 
 nu = np.sqrt(((d - 1)/2)**2 - (m/H)**2)
-
-# print('Scale factor a =', -1/(eta*H))
 
 # integration variable u = Delta_eta/(2eta_bar) runs over (-1, 1)
 epsilon = 1e-10  # small threshold in order to avoid limit points (nan)
@@ -176,6 +171,8 @@ def deltaDelta(eta_bar, D, newk0range, newDelta, norm, omega_k):
     Delta_cut = Delta_cutright[leftlimitindex:]
     return sum(Delta_cut)*(newk0range[1] - newk0range[0])/norm
 
+# return/norm for normed
+
 
 def plot_Delta_and_deltaDelta(etas):
 
@@ -185,6 +182,8 @@ def plot_Delta_and_deltaDelta(etas):
 
         Delta = FFT_for_G(etas[j], urange, grid_for_FFT(etas[j]))
         plt.figure(figsize=(11, 6))
+
+        # print('Deltan maksimi k_0 =', k0range(etas[j])[np.argmax(Delta)])
 
         plt.plot(k0range(etas[j]), Delta, 'r',
                  label=r'$\Delta^<_\bar{k}(k_0, \bar{\eta})$ FFT')
@@ -243,24 +242,18 @@ def plot_Delta_and_deltaDelta(etas):
 
 
 etas = [-0.1, -0.5, -1, -5]
+# (etabar) mean of conformal times 1/2(eta' + eta) in (-inf, 0)
+# -k*eta > 1 subhorizon
+# -k*eta < 1 superhorizon
+
+
 omegas_k = plot_Delta_and_deltaDelta(etas)  # input etabar values
 
 plt.plot(etas, omegas_k, 'mx')
-# TODO: vihkosta löytyy jutut TÄSTÄ ALASPÄIN ON TESTAILUA
+
 # TODO: MUOKKAA KOODI LUETTAVAKSI
 # TODO: omega_k plotti järkeväksi
 
-
-# print('Deltan maksimikohta k_0 =', k0range[np.argmax(Delta)])
-# M = sum(newDelta)*(newk0range[1] - newk0range[0])
-# print('N =', M)
-# omega_k = sum(newk0range*newDelta)*(newk0range[1] - newk0range[0])/M
-# print('omega_k =', omega_k)
-
-
 # plt.title(r'Symmetric around max, $\Delta^<_\bar k(k_0, \bar \eta)$ '
-#           'as a function of $k_0$'
+#           r'as a function of $k_0$'
 #           r' when $\bar \eta={a},\ k={b}$'.format(a=eta, b=k), fontsize=14)
-
-
-# return/M for normed
