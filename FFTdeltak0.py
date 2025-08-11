@@ -40,7 +40,8 @@ epsilon = 1e-10  # small threshold in order to avoid limit points (nan)
 urange = np.linspace(-1 + epsilon, 1 - epsilon, N)
 
 # for variable k0
-k0range = np.linspace(L/eta + k, -L/eta + k, N)
+def k0range(eta_bar):
+    return np.linspace(L/eta_bar + k, -L/eta_bar + k, N)
 
 
 def integrand_for_Delta(k_0, eta_bar, u):
@@ -128,14 +129,18 @@ def plot_integrand(k_0, eta_bar):
     plt.show()
 
 
-# input matrix for FFT
-x1, y1 = np.meshgrid(urange, k0range)
 # FFT matrix
-FFTgrid = np.exp(-1j*x1*2*y1*eta)*(urange[1] - urange[0])
+# FFTgrid = np.exp(-1j*x1*2*y1*eta)*(urange[1] - urange[0])
+
+
+def grid_for_FFT(eta_bar):
+    # input matrix for FFT
+    x1, y1 = np.meshgrid(urange, k0range(eta_bar))
+    return np.exp(-1j*x1*2*y1*eta_bar)*(urange[1] - urange[0])
 
 
 # FFT using the above defined grid
-def FFT_for_G(eta_bar, u):
+def FFT_for_G(eta_bar, u, gridmatrix):
     """
     Fourier transform of G wrt. u
 
@@ -157,38 +162,46 @@ def FFT_for_G(eta_bar, u):
     hankel_b = sc.special.hankel2(nu, -k*eta_bar*(u + 1))
     c = (1 - u**2)**(3/2)
     A = hankel_a*hankel_b*c
-    return np.pi/2*H**2*eta_bar**4*np.matmul(FFTgrid, A)
+    return np.pi/2*H**2*eta_bar**4*np.matmul(gridmatrix, A)
 
 
 # Delta at points k0range
-Delta = FFT_for_G(eta, urange)
+Delta = FFT_for_G(eta, urange, grid_for_FFT(eta))
 
 
-plt.figure(figsize=(11, 6))
+def plot_Delta(etas):
+    for j in range(len(etas)):
 
-plt.plot(k0range, Delta, 'r', label=r'$\Delta^<_\bar{k}(k_0, \bar{\eta})$ FFT')
+        Delta = FFT_for_G(etas[j], urange, grid_for_FFT(etas[j]))
+        plt.figure(figsize=(11, 6))
 
-plt.title(r'$\Delta^<_\bar k(k_0, \bar \eta)$ as a function of $k_0$'
-          r' when $\bar \eta={a},\ k={b}$'.format(a=eta, b=k), fontsize=14)
-plt.xlabel(r'$k_0 \in \left[k + L/\bar\eta, k - L/\bar\eta \right],\ L={a}$'
-           .format(a=L), fontsize=13)
+        plt.plot(k0range(etas[j]), Delta, 'r',
+                 label=r'$\Delta^<_\bar{k}(k_0, \bar{\eta})$ FFT')
 
-plt.axvline(0, c='gray')  # comment out when |eta| >> 1 (out of range)
-plt.axhline(0, c='gray')
+        plt.title(r'$\Delta^<_\bar k(k_0, \bar \eta)$ as a function of $k_0$'
+                  r' when $\bar \eta={a},\ k={b}$'.format(a=etas[j], b=k),
+                  fontsize=14)
+        plt.xlabel(r'$k_0 \in \left[k+L/\bar\eta,k-L/\bar\eta \right],\ L={a}$'
+                   .format(a=L), fontsize=13)
 
-plt.axvline(k, c='b', linestyle='--')
-plt.plot(k, integral_k, 'bD',
-         label=r'$\Delta^<_\bar{k}(k_0=k, \bar{\eta})$')
+        plt.axvline(0, c='gray')  # comment out when |eta| >> 1 (out of range)
+        plt.axhline(0, c='gray')
 
-# benchmarking for FFT
-for i in range(5):
-    randk0 = random.choice(k0range)
-    plt.plot(randk0, Delta_benchmark_integral(randk0, eta), 'go')
+        plt.axvline(k, c='b', linestyle='--')
+        plt.plot(k, integral_k, 'bD',
+                 label=r'$\Delta^<_\bar{k}(k_0=k, \bar{\eta})$')
 
-plt.legend(loc='upper left', fontsize=14, shadow=True)
-plt.grid()
-plt.show()
+        # benchmarking for FFT
+        for i in range(5):
+            randk0 = random.choice(k0range(etas[j]))
+            plt.plot(randk0, Delta_benchmark_integral(randk0, etas[j]), 'go')
 
+        plt.legend(loc='upper left', fontsize=14, shadow=True)
+        plt.grid()
+        plt.show()
+
+
+plot_Delta([-1, -0.1])
 
 # TODO: vihkosta löytyy jutut TÄSTÄ ALASPÄIN ON TESTAILUA
 # MUOKKAA KOODI LUETTAVAKSI
@@ -226,7 +239,7 @@ plt.show()
 
 
 # Delta = FFT_for_G(eta, urange)
-newk0range = k0range[0:2*np.argmax(Delta)]
+newk0range = k0range(eta)[0:2*np.argmax(Delta)]
 # max of Delta is now in middle of k0range
 
 
@@ -240,7 +253,7 @@ def deltaDelta(eta_bar, D):
     # k0range_cut = k0range_cutright[leftlimitindex:]  # plottausta varten
     Delta_cutright = newDelta[:rightlimitindex]
     Delta_cut = Delta_cutright[leftlimitindex:]
-    return sum(Delta_cut)*(k0range[1] - k0range[0])/M
+    return sum(Delta_cut)*(k0range(eta)[1] - k0range(eta)[0])/M
 
 # return/M for normed
 
@@ -264,3 +277,6 @@ plt.title(r'$\delta_\Delta$ when $\bar \eta={a},\ k={b}$'.format(a=eta, b=k),
 
 plt.grid()
 plt.show()
+
+
+
