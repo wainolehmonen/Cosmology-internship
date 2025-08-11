@@ -167,10 +167,7 @@ def FFT_for_G(eta_bar, u, gridmatrix):
 # Delta = FFT_for_G(eta, urange, grid_for_FFT(eta))
 
 
-def deltaDelta(eta_bar, D, newk0range, Delta):
-    newDelta = Delta[0:2*np.argmax(Delta)].real
-    norm = sum(newDelta)*(newk0range[1] - newk0range[0])
-    omega_k = sum(newk0range*newDelta)*(newk0range[1] - newk0range[0])/norm
+def deltaDelta(eta_bar, D, newk0range, newDelta, norm, omega_k):
     leftlimitindex = np.argmin(abs(newk0range - (omega_k - D)))
     rightlimitindex = np.argmin(abs(newk0range - (omega_k + D)))
     # k0range_cutright = newk0range[:rightlimitindex]
@@ -181,6 +178,9 @@ def deltaDelta(eta_bar, D, newk0range, Delta):
 
 
 def plot_Delta_and_deltaDelta(etas):
+
+    omegas_k = np.empty(len(etas))
+
     for j in range(len(etas)):
 
         Delta = FFT_for_G(etas[j], urange, grid_for_FFT(etas[j]))
@@ -217,14 +217,17 @@ def plot_Delta_and_deltaDelta(etas):
 
         Drange = np.linspace(0, newk0range[-1], num=1000)
         # D pienempi kuin newrange rajat
-
+        newDelta = Delta[0:2*np.argmax(Delta)].real
+        norm = sum(newDelta)*(newk0range[1] - newk0range[0])
+        omega_k = sum(newk0range*newDelta)*(newk0range[1] - newk0range[0])/norm
+        omegas_k[j] = omega_k
         deltajono = np.empty(len(Drange))
         for i in range(len(Drange)):
-            deltajono[i] = deltaDelta(etas[j], Drange[i], newk0range, Delta)
+            deltajono[i] = deltaDelta(etas[j], Drange[i], newk0range, newDelta,
+                                      norm, omega_k)
 
         plt.figure(figsize=(11, 6))
 
-        # plt.axhline(deltajono[-1], c='r', linestyle='--')
         plt.plot(Drange, deltajono, c='g')
 
         plt.ylabel(r'$\delta_\Delta$', fontsize=13)
@@ -236,12 +239,17 @@ def plot_Delta_and_deltaDelta(etas):
         plt.grid()
         plt.show()
 
+    return omegas_k
 
-plot_Delta_and_deltaDelta([-1, -0.1, -0.05])  # input etabar values
 
+etas = [-0.1, -0.5, -1, -5]
+omegas_k = plot_Delta_and_deltaDelta(etas)  # input etabar values
+
+plt.plot(etas, omegas_k, 'mx')
 # TODO: vihkosta löytyy jutut TÄSTÄ ALASPÄIN ON TESTAILUA
 # TODO: MUOKKAA KOODI LUETTAVAKSI
-# TODO: omega_k etan funktiona plotti
+# TODO: omega_k plotti järkeväksi
+
 
 # print('Deltan maksimikohta k_0 =', k0range[np.argmax(Delta)])
 # M = sum(newDelta)*(newk0range[1] - newk0range[0])
