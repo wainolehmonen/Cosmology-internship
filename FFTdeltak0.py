@@ -39,6 +39,7 @@ print('Scale factor a =', -1/(eta*H))
 epsilon = 1e-10  # small threshold in order to avoid limit points (nan)
 urange = np.linspace(-1 + epsilon, 1 - epsilon, N)
 
+
 # for variable k0
 def k0range(eta_bar):
     return np.linspace(L/eta_bar + k, -L/eta_bar + k, N)
@@ -130,9 +131,6 @@ def plot_integrand(k_0, eta_bar):
 
 
 # FFT matrix
-# FFTgrid = np.exp(-1j*x1*2*y1*eta)*(urange[1] - urange[0])
-
-
 def grid_for_FFT(eta_bar):
     # input matrix for FFT
     x1, y1 = np.meshgrid(urange, k0range(eta_bar))
@@ -169,7 +167,20 @@ def FFT_for_G(eta_bar, u, gridmatrix):
 Delta = FFT_for_G(eta, urange, grid_for_FFT(eta))
 
 
-def plot_Delta(etas):
+def deltaDelta(eta_bar, D, newk0range, Delta):
+    newDelta = Delta[0:2*np.argmax(Delta)].real
+    M = sum(newDelta)*(newk0range[1] - newk0range[0])
+    omega_k = sum(newk0range*newDelta)*(newk0range[1] - newk0range[0])/M
+    leftlimitindex = np.argmin(abs(newk0range - (omega_k - D)))
+    rightlimitindex = np.argmin(abs(newk0range - (omega_k + D)))
+    # k0range_cutright = newk0range[:rightlimitindex]
+    # k0range_cut = k0range_cutright[leftlimitindex:]  # plottausta varten
+    Delta_cutright = newDelta[:rightlimitindex]
+    Delta_cut = Delta_cutright[leftlimitindex:]
+    return sum(Delta_cut)*(newk0range[1] - newk0range[0])/M
+
+
+def plot_Delta_and_deltaDelta(etas):
     for j in range(len(etas)):
 
         Delta = FFT_for_G(etas[j], urange, grid_for_FFT(etas[j]))
@@ -199,9 +210,32 @@ def plot_Delta(etas):
         plt.legend(loc='upper left', fontsize=14, shadow=True)
         plt.grid()
         plt.show()
+        
+        newk0range = k0range(etas[j])[0:2*np.argmax(Delta)]
+        
+        Drange = np.linspace(0, newk0range[-1], num=1000)
+        # D pienempi kuin newrange rajat
+
+        deltajono = np.empty(len(Drange))
+        for i in range(len(Drange)):
+            deltajono[i] = deltaDelta(etas[j], Drange[i], newk0range, Delta)
+
+        plt.figure(figsize=(11, 6))
+
+        # plt.axhline(deltajono[-1], c='r', linestyle='--')
+        plt.plot(Drange, deltajono, c='g')
+
+        plt.ylabel(r'$\delta_\Delta$', fontsize=13)
+        plt.xlabel(r'$\Delta$ in units of $k_0$', fontsize=13)
+        plt.title(r'$\delta_\Delta$ when $\bar \eta={a},\ k={b}$'
+                  .format(a=etas[j], b=k), fontsize=14)
+
+        plt.grid()
+        plt.show()
 
 
-plot_Delta([-1, -0.1])
+
+plot_Delta_and_deltaDelta([-1, -0.1])
 
 # TODO: vihkosta löytyy jutut TÄSTÄ ALASPÄIN ON TESTAILUA
 # MUOKKAA KOODI LUETTAVAKSI
@@ -239,44 +273,12 @@ plot_Delta([-1, -0.1])
 
 
 # Delta = FFT_for_G(eta, urange)
-newk0range = k0range(eta)[0:2*np.argmax(Delta)]
 # max of Delta is now in middle of k0range
 
-
-def deltaDelta(eta_bar, D):
-    newDelta = Delta[0:2*np.argmax(Delta)].real
-    M = sum(newDelta)*(newk0range[1] - newk0range[0])
-    omega_k = sum(newk0range*newDelta)*(newk0range[1] - newk0range[0])/M
-    leftlimitindex = np.argmin(abs(newk0range - (omega_k - D)))
-    rightlimitindex = np.argmin(abs(newk0range - (omega_k + D)))
-    # k0range_cutright = newk0range[:rightlimitindex]
-    # k0range_cut = k0range_cutright[leftlimitindex:]  # plottausta varten
-    Delta_cutright = newDelta[:rightlimitindex]
-    Delta_cut = Delta_cutright[leftlimitindex:]
-    return sum(Delta_cut)*(k0range(eta)[1] - k0range(eta)[0])/M
 
 # return/M for normed
 
 
-Drange = np.linspace(0, newk0range[-1], num=1000)
-# D pienempi kuin newrange rajat
-
-deltajono = np.empty(len(Drange))
-for i in range(len(Drange)):
-    deltajono[i] = deltaDelta(eta, Drange[i])
-
-plt.figure(figsize=(11, 6))
-
-# plt.axhline(deltajono[-1], c='r', linestyle='--')
-plt.plot(Drange, deltajono, c='g')
-
-plt.ylabel(r'$\delta_\Delta$', fontsize=13)
-plt.xlabel(r'$\Delta$ in units of $k_0$', fontsize=13)
-plt.title(r'$\delta_\Delta$ when $\bar \eta={a},\ k={b}$'.format(a=eta, b=k),
-          fontsize=14)
-
-plt.grid()
-plt.show()
 
 
 
