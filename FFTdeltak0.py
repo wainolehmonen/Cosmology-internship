@@ -19,7 +19,7 @@ H = 1  # Hubble rate
 d = 4  # dimension
 
 k = 5  # norm of k bar in [0, inf)
-eta = -0.1  # (etabar) mean of conformal times 1/2(eta' + eta) in (-inf, 0)
+# eta = -0.1  # (etabar) mean of conformal times 1/2(eta' + eta) in (-inf, 0)
 # -k*eta > 1 subhorizon
 # -k*eta < 1 superhorizon
 
@@ -33,7 +33,7 @@ L = 50  # limits for k0 (when eta = -1)
 
 nu = np.sqrt(((d - 1)/2)**2 - (m/H)**2)
 
-print('Scale factor a =', -1/(eta*H))
+# print('Scale factor a =', -1/(eta*H))
 
 # integration variable u = Delta_eta/(2eta_bar) runs over (-1, 1)
 epsilon = 1e-10  # small threshold in order to avoid limit points (nan)
@@ -42,7 +42,7 @@ urange = np.linspace(-1 + epsilon, 1 - epsilon, N)
 
 # for variable k0
 def k0range(eta_bar):
-    return np.linspace(L/eta_bar + k, -L/eta_bar + k, N)
+    return np.linspace(-L/abs(eta_bar) + k, L/abs(eta_bar) + k, N)
 
 
 def integrand_for_Delta(k_0, eta_bar, u):
@@ -94,10 +94,10 @@ def Delta_benchmark_integral(k_0, eta_bar):
         - 1j*sc.integrate.quad(I_Im, -1, 1)[0]
 
 
-integral_k = Delta_benchmark_integral(k, eta)
+# integral_k = Delta_benchmark_integral(k, eta)
 # print(benchmark_integral)
 
-integrand_k = integrand_for_Delta(k, eta, urange)  # integrand at points u
+# integrand_k = integrand_for_Delta(k, eta, urange)  # integrand at points u
 # # this benchmark (for FFT) uses same u grid as the FFT (compare with scipy)
 # benchmark_integral = sum(integrand_k)*(urange[1]-urange[0])
 # print(benchmark_integral)
@@ -164,20 +164,20 @@ def FFT_for_G(eta_bar, u, gridmatrix):
 
 
 # Delta at points k0range
-Delta = FFT_for_G(eta, urange, grid_for_FFT(eta))
+# Delta = FFT_for_G(eta, urange, grid_for_FFT(eta))
 
 
 def deltaDelta(eta_bar, D, newk0range, Delta):
     newDelta = Delta[0:2*np.argmax(Delta)].real
-    M = sum(newDelta)*(newk0range[1] - newk0range[0])
-    omega_k = sum(newk0range*newDelta)*(newk0range[1] - newk0range[0])/M
+    norm = sum(newDelta)*(newk0range[1] - newk0range[0])
+    omega_k = sum(newk0range*newDelta)*(newk0range[1] - newk0range[0])/norm
     leftlimitindex = np.argmin(abs(newk0range - (omega_k - D)))
     rightlimitindex = np.argmin(abs(newk0range - (omega_k + D)))
     # k0range_cutright = newk0range[:rightlimitindex]
     # k0range_cut = k0range_cutright[leftlimitindex:]  # plottausta varten
     Delta_cutright = newDelta[:rightlimitindex]
     Delta_cut = Delta_cutright[leftlimitindex:]
-    return sum(Delta_cut)*(newk0range[1] - newk0range[0])/M
+    return sum(Delta_cut)*(newk0range[1] - newk0range[0])/norm
 
 
 def plot_Delta_and_deltaDelta(etas):
@@ -188,9 +188,11 @@ def plot_Delta_and_deltaDelta(etas):
 
         plt.plot(k0range(etas[j]), Delta, 'r',
                  label=r'$\Delta^<_\bar{k}(k_0, \bar{\eta})$ FFT')
+        a = -1/(etas[j]*H)
 
         plt.title(r'$\Delta^<_\bar k(k_0, \bar \eta)$ as a function of $k_0$'
-                  r' when $\bar \eta={a},\ k={b}$'.format(a=etas[j], b=k),
+                  r' when $\bar \eta={a},\ k={b},\ a={c},\ H={H}$'
+                  .format(a=etas[j], b=k, c=a, H=H),
                   fontsize=14)
         plt.xlabel(r'$k_0 \in \left[k+L/\bar\eta,k-L/\bar\eta \right],\ L={a}$'
                    .format(a=L), fontsize=13)
@@ -199,8 +201,8 @@ def plot_Delta_and_deltaDelta(etas):
         plt.axhline(0, c='gray')
 
         plt.axvline(k, c='b', linestyle='--')
-        plt.plot(k, integral_k, 'bD',
-                 label=r'$\Delta^<_\bar{k}(k_0=k, \bar{\eta})$')
+        # plt.plot(k, integral_k, 'bD',
+        #          label=r'$\Delta^<_\bar{k}(k_0=k, \bar{\eta})$')
 
         # benchmarking for FFT
         for i in range(5):
@@ -210,9 +212,9 @@ def plot_Delta_and_deltaDelta(etas):
         plt.legend(loc='upper left', fontsize=14, shadow=True)
         plt.grid()
         plt.show()
-        
+
         newk0range = k0range(etas[j])[0:2*np.argmax(Delta)]
-        
+
         Drange = np.linspace(0, newk0range[-1], num=1000)
         # D pienempi kuin newrange rajat
 
@@ -227,58 +229,29 @@ def plot_Delta_and_deltaDelta(etas):
 
         plt.ylabel(r'$\delta_\Delta$', fontsize=13)
         plt.xlabel(r'$\Delta$ in units of $k_0$', fontsize=13)
-        plt.title(r'$\delta_\Delta$ when $\bar \eta={a},\ k={b}$'
-                  .format(a=etas[j], b=k), fontsize=14)
+        plt.title(r'$\delta_\Delta$ when '
+                  r'$\bar \eta={a},\ k={b},\ a={c},\ H={H}$'
+                  .format(a=etas[j], b=k, c=a, H=H), fontsize=14)
 
         plt.grid()
         plt.show()
 
 
-
-plot_Delta_and_deltaDelta([-1, -0.1])
+plot_Delta_and_deltaDelta([-10, -0.1])  # input etabar values
 
 # TODO: vihkosta löytyy jutut TÄSTÄ ALASPÄIN ON TESTAILUA
 # MUOKKAA KOODI LUETTAVAKSI
 
 # print('Deltan maksimikohta k_0 =', k0range[np.argmax(Delta)])
-# newk0range = k0range[0:2*np.argmax(Delta)]
-# newDelta = Delta[0:2*np.argmax(Delta)].real
 # M = sum(newDelta)*(newk0range[1] - newk0range[0])
 # print('N =', M)
 # omega_k = sum(newk0range*newDelta)*(newk0range[1] - newk0range[0])/M
 # print('omega_k =', omega_k)
 
 
-# plt.figure(figsize=(11, 6))
-
-# plt.plot(newk0range, newDelta, 'r',
-#          label=r'$\Delta^<_\bar{k}(k_0, \bar{\eta})$ FFT')
-
 # plt.title(r'Symmetric around max, $\Delta^<_\bar k(k_0, \bar \eta)$ '
 #           'as a function of $k_0$'
 #           r' when $\bar \eta={a},\ k={b}$'.format(a=eta, b=k), fontsize=14)
-# plt.xlabel(r'$k_0 \in \left[\max - \lambda, \max + \lambda \right]$',
-#            fontsize=13)
-
-# plt.axvline(0, c='gray')  # comment out when |eta| >> 1 (out of range)
-# plt.axhline(0, c='gray')
-
-# plt.axvline(k, c='b', linestyle='--')
-# plt.plot(k, integral_k, 'bD',
-#          label=r'$\Delta^<_\bar{k}(k_0=k, \bar{\eta})$')
-
-# plt.legend(loc='upper left', fontsize=14, shadow=True)
-# plt.grid()
-# plt.show()
-
-
-# Delta = FFT_for_G(eta, urange)
-# max of Delta is now in middle of k0range
 
 
 # return/M for normed
-
-
-
-
-
