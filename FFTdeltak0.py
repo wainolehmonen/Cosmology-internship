@@ -24,7 +24,7 @@ k = 5  # norm of k bar in [0, inf)
 # -k*eta < 1 superhorizon
 
 # number of data points for plotting and FFT (FFT matrix is N by N)
-N = 4000
+N = 1000
 
 L = 50  # limits for k0 (when eta = -1)
 
@@ -201,8 +201,8 @@ def plot_Delta_and_deltaDelta(etas):
         plt.axhline(0, c='gray')
 
         plt.axvline(k, c='b', linestyle='--')
-        # plt.plot(k, integral_k, 'bD',
-        #          label=r'$\Delta^<_\bar{k}(k_0=k, \bar{\eta})$')
+        plt.plot(k, Delta_benchmark_integral(k, etas[j]), 'bD',
+                 label=r'$\Delta^<_\bar{k}(k_0=k, \bar{\eta})$')
 
         # benchmarking for FFT
         for i in range(5):
@@ -237,10 +237,11 @@ def plot_Delta_and_deltaDelta(etas):
         plt.show()
 
 
-plot_Delta_and_deltaDelta([-10, -0.1])  # input etabar values
+plot_Delta_and_deltaDelta([-1, -0.1, -0.05])  # input etabar values
 
 # TODO: vihkosta löytyy jutut TÄSTÄ ALASPÄIN ON TESTAILUA
-# MUOKKAA KOODI LUETTAVAKSI
+# TODO: MUOKKAA KOODI LUETTAVAKSI
+# TODO: omega_k etan funktiona plotti
 
 # print('Deltan maksimikohta k_0 =', k0range[np.argmax(Delta)])
 # M = sum(newDelta)*(newk0range[1] - newk0range[0])
