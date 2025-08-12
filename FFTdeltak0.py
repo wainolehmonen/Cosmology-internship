@@ -40,7 +40,7 @@ def k0range(eta_bar):
     return np.linspace(-L/abs(eta_bar) + k, L/abs(eta_bar) + k, N)
 
 
-def integrand_for_Delta(k_0, eta_bar, u):
+def integrand_for_Delta(u, k_0, eta_bar):
     """
     This integrated over u in (-1, 1) should be Delta^<_k
 
@@ -66,6 +66,7 @@ def integrand_for_Delta(k_0, eta_bar, u):
     return np.pi/2*H**2*eta_bar**4*c*hankel_a*hankel_b
 
 
+# Integral using scipy quad (only real part (imaginary part is zero))
 def Delta_benchmark_integral(k_0, eta_bar):
     """
     Uses scipy quad to evaluate the integral for Delta at given points
@@ -74,19 +75,17 @@ def Delta_benchmark_integral(k_0, eta_bar):
     ----------
     k_0 : float
         frequency
-    eta_bar : array-like
+    eta_bar : float
         mean of conformal times
 
     Returns
     -------
-    array-like
+    float
         Delta at given points
 
     """
-    I_Re = lambda u: integrand_for_Delta(k_0, eta_bar, u).real
-    I_Im = lambda u: integrand_for_Delta(k_0, eta_bar, u).imag
-    return sc.integrate.quad(I_Re, -1, 1)[0] \
-        - 1j*sc.integrate.quad(I_Im, -1, 1)[0]
+    return sc.integrate.quad(integrand_for_Delta, -1, 1,
+                             args=(k_0, eta_bar))[0]
 
 
 # integral_k = Delta_benchmark_integral(k, eta)
@@ -249,7 +248,7 @@ etas = [-0.1, -0.5, -1, -5]
 
 omegas_k = plot_Delta_and_deltaDelta(etas)  # input etabar values
 
-plt.plot(etas, omegas_k, 'mx')
+plt.plot(etas, omegas_k, 'b.')
 
 # TODO: MUOKKAA KOODI LUETTAVAKSI
 # TODO: omega_k plotti järkeväksi
