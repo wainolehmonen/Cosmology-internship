@@ -148,11 +148,31 @@ def FFT_for_G(eta_bar, u, gridmatrix):
     return np.pi/2*H**2*eta_bar**4*np.matmul(gridmatrix, A)
 
 
-# Delta at points k0range
-# Delta = FFT_for_G(eta, urange, grid_for_FFT(eta))
-
-
 def deltaDelta(eta_bar, D, newk0range, newDelta, norm, omega_k):
+    """
+    Gives the quantity delta_Delta
+
+    Parameters
+    ----------
+    eta_bar : float
+        mean of conformal times (eta' + eta)/2
+    D : float
+        parameter Delta (not same Delta), gives boundaries for integral
+    newk0range : array-like
+        k0 values for integration
+    newDelta : array-like
+        Delta values, symmetric around max
+    norm : float
+        norm factor, integral of Delta over all k0
+    omega_k : float
+        normed integral of k0*Delta over all k0
+
+    Returns
+    -------
+    array-like
+        quantity delta_Delta as a function of Delta (D)
+
+    """
     leftlimitindex = np.argmin(abs(newk0range - (omega_k - D)))
     rightlimitindex = np.argmin(abs(newk0range - (omega_k + D)))
     # k0range_cutright = newk0range[:rightlimitindex]
@@ -160,8 +180,7 @@ def deltaDelta(eta_bar, D, newk0range, newDelta, norm, omega_k):
     Delta_cutright = newDelta[:rightlimitindex]
     Delta_cut = Delta_cutright[leftlimitindex:]
     return sum(Delta_cut)*(newk0range[1] - newk0range[0])/norm
-
-# return/norm for normed
+    # /norm for normed
 
 
 def plot_Delta_and_deltaDelta(etas):
@@ -180,11 +199,11 @@ def plot_Delta_and_deltaDelta(etas):
         a = -1/(etas[j]*H)
 
         plt.title(r'$\Delta^<_\bar k(k_0, \bar \eta)$ as a function of $k_0$'
-                  r' when $\bar \eta={a},\ k={b},\ a={c},\ H={H}$'
-                  .format(a=etas[j], b=k, c=a, H=H),
+                  r' when $\bar \eta={b},\ k={k},\ a={c},\ H={H}$'
+                  .format(b=etas[j], k=k, c=a, H=H),
                   fontsize=14)
-        plt.xlabel(r'$k_0 \in \left[k+L/\bar\eta,k-L/\bar\eta \right],\ L={a}$'
-                   .format(a=L), fontsize=13)
+        plt.xlabel(r'$k_0 \in \left[k+L/\bar\eta,k-L/\bar\eta \right],\ L={L}$'
+                   .format(L=L), fontsize=13)
 
         plt.axvline(0, c='gray')  # comment out when |eta| >> 1 (out of range)
         plt.axhline(0, c='gray')
@@ -221,8 +240,8 @@ def plot_Delta_and_deltaDelta(etas):
         plt.ylabel(r'$\delta_\Delta$', fontsize=13)
         plt.xlabel(r'$\Delta$ in units of $k_0$', fontsize=13)
         plt.title(r'$\delta_\Delta$ when '
-                  r'$\bar \eta={a},\ k={b},\ a={c},\ H={H}$'
-                  .format(a=etas[j], b=k, c=a, H=H), fontsize=14)
+                  r'$\bar \eta={b},\ k={k},\ a={a},\ H={H}$'
+                  .format(b=etas[j], k=k, a=a, H=H), fontsize=14)
 
         plt.grid()
         plt.show()
@@ -246,7 +265,7 @@ plt.ylabel(r'$\omega_k$', fontsize=13)
 plt.plot(etas, omegas_k, 'bx')
 
 # TODO: MUOKKAA KOODI LUETTAVAKSI, lisää dokumentaatiot joka funktioon
-# TODO: omega_k plotti järkeväksi
+# TODO: omega_k plotti järkeväksi, oma funktio??
 
 # TODO: voisko tän lisätä mahdollisuudeks plotti funktioon
 # plt.title(r'Symmetric around max, $\Delta^<_\bar k(k_0, \bar \eta)$ '
