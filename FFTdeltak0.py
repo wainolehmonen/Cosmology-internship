@@ -88,15 +88,6 @@ def Delta_benchmark_integral(k_0, eta_bar):
                              args=(k_0, eta_bar))[0]
 
 
-# integral_k = Delta_benchmark_integral(k, eta)
-# print(benchmark_integral)
-
-# integrand_k = integrand_for_Delta(k, eta, urange)  # integrand at points u
-# # this benchmark (for FFT) uses same u grid as the FFT (compare with scipy)
-# benchmark_integral = sum(integrand_k)*(urange[1]-urange[0])
-# print(benchmark_integral)
-
-
 def plot_integrand(k_0, eta_bar):
     """
     Plots the integrand for delta as function of integration variable u
@@ -214,7 +205,6 @@ def plot_Delta_and_deltaDelta(etas):
         newk0range = k0range(etas[j])[0:2*np.argmax(Delta)]
 
         Drange = np.linspace(0, newk0range[-1], num=1000)
-        # D pienempi kuin newrange rajat
         newDelta = Delta[0:2*np.argmax(Delta)].real
         norm = sum(newDelta)*(newk0range[1] - newk0range[0])
         omega_k = sum(newk0range*newDelta)*(newk0range[1] - newk0range[0])/norm
@@ -248,11 +238,17 @@ etas = [-0.1, -0.5, -1, -5]
 
 omegas_k = plot_Delta_and_deltaDelta(etas)  # input etabar values
 
-plt.plot(etas, omegas_k, 'b.')
+# dot-plot how omega_k changes as a function of eta
+plt.figure(figsize=(11, 6))
+plt.title(r'$\omega_k(\bar\eta)$', fontsize=14)
+plt.xlabel(r'$\bar\eta$', fontsize=13)
+plt.ylabel(r'$\omega_k$', fontsize=13)
+plt.plot(etas, omegas_k, 'bx')
 
-# TODO: MUOKKAA KOODI LUETTAVAKSI
+# TODO: MUOKKAA KOODI LUETTAVAKSI, lisää dokumentaatiot joka funktioon
 # TODO: omega_k plotti järkeväksi
 
+# TODO: voisko tän lisätä mahdollisuudeks plotti funktioon
 # plt.title(r'Symmetric around max, $\Delta^<_\bar k(k_0, \bar \eta)$ '
 #           r'as a function of $k_0$'
 #           r' when $\bar \eta={a},\ k={b}$'.format(a=eta, b=k), fontsize=14)
