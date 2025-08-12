@@ -183,44 +183,49 @@ def deltaDelta(eta_bar, D, newk0range, newDelta, norm, omega_k):
     # /norm for normed
 
 
-def plot_Delta_and_deltaDelta(etas):
+def plot_Delta_and_deltaDelta(etas, plotting=True):
 
     omegas_k = np.empty(len(etas))
 
     for j in range(len(etas)):
 
         Delta = FFT_for_G(etas[j], urange, grid_for_FFT(etas[j]))
-        plt.figure(figsize=(11, 6))
 
-        # print('Deltan maksimi k_0 =', k0range(etas[j])[np.argmax(Delta)])
+        if plotting:
+            plt.figure(figsize=(11, 6))
 
-        plt.plot(k0range(etas[j]), Delta, 'r',
-                 label=r'$\Delta^<_\bar{k}(k_0, \bar{\eta})$ FFT')
-        a = -1/(etas[j]*H)
+            # print('Deltan maksimi k_0 =', k0range(etas[j])[np.argmax(Delta)])
 
-        plt.title(r'$\Delta^<_\bar k(k_0, \bar \eta)$ as a function of $k_0$'
-                  r' when $\bar \eta={b},\ k={k},\ a={c},\ H={H}$'
-                  .format(b=etas[j], k=k, c=a, H=H),
-                  fontsize=14)
-        plt.xlabel(r'$k_0 \in \left[k+L/\bar\eta,k-L/\bar\eta \right],\ L={L}$'
-                   .format(L=L), fontsize=13)
+            plt.plot(k0range(etas[j]), Delta, 'r',
+                     label=r'$\Delta^<_\bar{k}(k_0, \bar{\eta})$ FFT')
+            a = -1/(etas[j]*H)
 
-        plt.axvline(0, c='gray')  # comment out when |eta| >> 1 (out of range)
-        plt.axhline(0, c='gray')
+            plt.title(r'$\Delta^<_\bar k(k_0, \bar \eta)$ as a function of $k_0$'
+                      r' when $\bar \eta={b},\ k={k},\ a={c},\ H={H}$'
+                      .format(b=etas[j], k=k, c=a, H=H),
+                      fontsize=14)
+            plt.xlabel(r'$k_0 \in \left[k+L/\bar\eta,k-L/\bar\eta \right],\ L={L}$'
+                       .format(L=L), fontsize=13)
 
-        plt.axvline(k, c='b', linestyle='--')
-        plt.plot(k, Delta_benchmark_integral(k, etas[j]), 'bD',
-                 label=r'$\Delta^<_\bar{k}(k_0=k, \bar{\eta})$')
+            # axes
+            plt.axvline(0, c='gray')  # comment when |eta| >> 1 (out of range)
+            plt.axhline(0, c='gray')
 
-        # benchmarking for FFT
-        for i in range(5):
-            randk0 = random.choice(k0range(etas[j]))
-            plt.plot(randk0, Delta_benchmark_integral(randk0, etas[j]), 'go')
+            plt.axvline(k, c='b', linestyle='--')
+            plt.plot(k, Delta_benchmark_integral(k, etas[j]), 'bD',
+                     label=r'$\Delta^<_\bar{k}(k_0=k, \bar{\eta})$')
 
-        plt.legend(loc='upper left', fontsize=14, shadow=True)
-        plt.grid()
-        plt.show()
+            # benchmarking for FFT
+            for i in range(5):
+                randk0 = random.choice(k0range(etas[j]))
+                plt.plot(randk0, Delta_benchmark_integral(randk0,
+                                                          etas[j]), 'go')
 
+            plt.legend(loc='upper left', fontsize=14, shadow=True)
+            plt.grid()
+            plt.show()
+
+        # cut the range to be symmetric around max of Delta
         newk0range = k0range(etas[j])[0:2*np.argmax(Delta)]
 
         Drange = np.linspace(0, newk0range[-1], num=1000)
@@ -233,29 +238,30 @@ def plot_Delta_and_deltaDelta(etas):
             deltajono[i] = deltaDelta(etas[j], Drange[i], newk0range, newDelta,
                                       norm, omega_k)
 
-        plt.figure(figsize=(11, 6))
+        if plotting:
+            plt.figure(figsize=(11, 6))
 
-        plt.plot(Drange, deltajono, c='g')
+            plt.plot(Drange, deltajono, c='g')
 
-        plt.ylabel(r'$\delta_\Delta$', fontsize=13)
-        plt.xlabel(r'$\Delta$ in units of $k_0$', fontsize=13)
-        plt.title(r'$\delta_\Delta$ when '
-                  r'$\bar \eta={b},\ k={k},\ a={a},\ H={H}$'
-                  .format(b=etas[j], k=k, a=a, H=H), fontsize=14)
+            plt.ylabel(r'$\delta_\Delta$', fontsize=13)
+            plt.xlabel(r'$\Delta$ in units of $k_0$', fontsize=13)
+            plt.title(r'$\delta_\Delta$ when '
+                      r'$\bar \eta={b},\ k={k},\ a={a},\ H={H}$'
+                      .format(b=etas[j], k=k, a=a, H=H), fontsize=14)
 
-        plt.grid()
-        plt.show()
+            plt.grid()
+            plt.show()
 
     return omegas_k
 
 
-etas = [-0.1, -0.5, -1, -5]
+etas = [-0.05, -0.1, -0.2, -0.5, -1]  # input etabar values
 # (etabar) mean of conformal times 1/2(eta' + eta) in (-inf, 0)
 # -k*eta > 1 subhorizon
 # -k*eta < 1 superhorizon
 
 
-omegas_k = plot_Delta_and_deltaDelta(etas)  # input etabar values
+omegas_k = plot_Delta_and_deltaDelta(etas, plotting=False)
 
 # dot-plot how omega_k changes as a function of eta
 plt.figure(figsize=(11, 6))
@@ -263,9 +269,13 @@ plt.title(r'$\omega_k(\bar\eta)$', fontsize=14)
 plt.xlabel(r'$\bar\eta$', fontsize=13)
 plt.ylabel(r'$\omega_k$', fontsize=13)
 plt.plot(etas, omegas_k, 'bx')
+plt.grid()
+plt.show()
+
+# when m/H -> 3/2 something weird happens close to eta = zero
 
 # TODO: MUOKKAA KOODI LUETTAVAKSI, lisää dokumentaatiot joka funktioon
-# TODO: omega_k plotti järkeväksi, oma funktio??
+# TODO: selkeät ohjeet, että miten ajetaan
 
 # TODO: voisko tän lisätä mahdollisuudeks plotti funktioon
 # plt.title(r'Symmetric around max, $\Delta^<_\bar k(k_0, \bar \eta)$ '
