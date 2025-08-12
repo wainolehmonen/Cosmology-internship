@@ -191,6 +191,19 @@ def plot_Delta_and_deltaDelta(etas, plotting=True):
 
         Delta = FFT_for_G(etas[j], urange, grid_for_FFT(etas[j]))
 
+        # cut the range to be symmetric around max of Delta
+        newk0range = k0range(etas[j])[0:2*np.argmax(Delta)]
+
+        Drange = np.linspace(0, newk0range[-1], num=1000)
+        newDelta = Delta[0:2*np.argmax(Delta)].real
+        norm = sum(newDelta)*(newk0range[1] - newk0range[0])
+        omega_k = sum(newk0range*newDelta)*(newk0range[1] - newk0range[0])/norm
+        omegas_k[j] = omega_k
+        deltajono = np.empty(len(Drange))
+        for i in range(len(Drange)):
+            deltajono[i] = deltaDelta(etas[j], Drange[i], newk0range, newDelta,
+                                      norm, omega_k)
+
         if plotting:
             plt.figure(figsize=(11, 6))
 
@@ -200,12 +213,13 @@ def plot_Delta_and_deltaDelta(etas, plotting=True):
                      label=r'$\Delta^<_\bar{k}(k_0, \bar{\eta})$ FFT')
             a = -1/(etas[j]*H)
 
-            plt.title(r'$\Delta^<_\bar k(k_0, \bar \eta)$ as a function of $k_0$'
+            plt.title(r'$\Delta^<_\bar k(k_0, \bar \eta)$'
+                      r' as a function of $k_0$'
                       r' when $\bar \eta={b},\ k={k},\ a={c},\ H={H}$'
                       .format(b=etas[j], k=k, c=a, H=H),
                       fontsize=14)
-            plt.xlabel(r'$k_0 \in \left[k+L/\bar\eta,k-L/\bar\eta \right],\ L={L}$'
-                       .format(L=L), fontsize=13)
+            plt.xlabel(r'$k_0 \in \left[k+L/\bar\eta,k-L/\bar\eta \right]$, '
+                       '$L={L}$'.format(L=L), fontsize=13)
 
             # axes
             plt.axvline(0, c='gray')  # comment when |eta| >> 1 (out of range)
@@ -225,20 +239,6 @@ def plot_Delta_and_deltaDelta(etas, plotting=True):
             plt.grid()
             plt.show()
 
-        # cut the range to be symmetric around max of Delta
-        newk0range = k0range(etas[j])[0:2*np.argmax(Delta)]
-
-        Drange = np.linspace(0, newk0range[-1], num=1000)
-        newDelta = Delta[0:2*np.argmax(Delta)].real
-        norm = sum(newDelta)*(newk0range[1] - newk0range[0])
-        omega_k = sum(newk0range*newDelta)*(newk0range[1] - newk0range[0])/norm
-        omegas_k[j] = omega_k
-        deltajono = np.empty(len(Drange))
-        for i in range(len(Drange)):
-            deltajono[i] = deltaDelta(etas[j], Drange[i], newk0range, newDelta,
-                                      norm, omega_k)
-
-        if plotting:
             plt.figure(figsize=(11, 6))
 
             plt.plot(Drange, deltajono, c='g')
@@ -255,29 +255,35 @@ def plot_Delta_and_deltaDelta(etas, plotting=True):
     return omegas_k
 
 
-etas = [-0.05, -0.1, -0.2, -0.5, -1]  # input etabar values
-# (etabar) mean of conformal times 1/2(eta' + eta) in (-inf, 0)
+def plot_everything(etas, dotplot=True, plottingdeltas=True):
+
+    omegas_k = plot_Delta_and_deltaDelta(etas, plottingdeltas)
+
+    # dot-plot how omega_k changes as a function of eta
+    plt.figure(figsize=(11, 6))
+    plt.title(r'$\omega_k(\bar\eta)$', fontsize=14)
+    plt.xlabel(r'$\bar\eta$', fontsize=13)
+    plt.ylabel(r'$\omega_k$', fontsize=13)
+    if dotplot:
+        plt.plot(etas, omegas_k, 'bx')
+    else:
+        plt.plot(etas, omegas_k, 'b')
+    plt.grid()
+    plt.show()
+
+
+# input etabar values
+etarange = [-0.05, -0.1, -0.2, -0.5, -1]
+# etarange = np.linspace(-0.1, -10, 100)
+# (etabar) mean of conformal times (eta' + eta)/2 in (-inf, 0)
 # -k*eta > 1 subhorizon
 # -k*eta < 1 superhorizon
 
+# when number of etas is large, dotplot=False, plottingdeltas=False
+plot_everything(etarange)
 
-omegas_k = plot_Delta_and_deltaDelta(etas, plotting=False)
-
-# dot-plot how omega_k changes as a function of eta
-plt.figure(figsize=(11, 6))
-plt.title(r'$\omega_k(\bar\eta)$', fontsize=14)
-plt.xlabel(r'$\bar\eta$', fontsize=13)
-plt.ylabel(r'$\omega_k$', fontsize=13)
-plt.plot(etas, omegas_k, 'bx')
-plt.grid()
-plt.show()
-
-# when m/H -> 3/2 something weird happens close to eta = zero
+# when m/H -> 3/2 something weird close to eta = zero, probably grid related
 
 # TODO: MUOKKAA KOODI LUETTAVAKSI, lisää dokumentaatiot joka funktioon
 # TODO: selkeät ohjeet, että miten ajetaan
-
-# TODO: voisko tän lisätä mahdollisuudeks plotti funktioon
-# plt.title(r'Symmetric around max, $\Delta^<_\bar k(k_0, \bar \eta)$ '
-#           r'as a function of $k_0$'
-#           r' when $\bar \eta={a},\ k={b}$'.format(a=eta, b=k), fontsize=14)
+# TODO: LEGENDI jossa vakiot listattu, joka kuvaan!!!
