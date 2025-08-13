@@ -37,6 +37,20 @@ urange = np.linspace(-1 + epsilon, 1 - epsilon, N)
 
 # for variable k0
 def k0range(eta_bar):
+    """
+    Range of k_0's for plotting [k - L/|eta|, k + L/|eta|]
+
+    Parameters
+    ----------
+    eta_bar : float
+        mean of conformal times (eta + eta')/2
+
+    Returns
+    -------
+    array-like
+        range of k_0 for plotting
+
+    """
     return np.linspace(-L/abs(eta_bar) + k, L/abs(eta_bar) + k, N)
 
 
@@ -179,11 +193,10 @@ def deltaDelta(eta_bar, D, newk0range, newDelta, norm, omega_k):
     # k0range_cut = k0range_cutright[leftlimitindex:]  # plottausta varten
     Delta_cutright = newDelta[:rightlimitindex]
     Delta_cut = Delta_cutright[leftlimitindex:]
-    return sum(Delta_cut)*(newk0range[1] - newk0range[0])/norm
-    # /norm for normed
+    return sum(Delta_cut)*(newk0range[1] - newk0range[0])
 
 
-def plot_Delta_and_deltaDelta(etas, plotting=True):
+def plot_Delta_and_deltaDelta(etas, plotting=True, norming=True):
 
     omegas_k = np.empty(len(etas))
 
@@ -191,18 +204,22 @@ def plot_Delta_and_deltaDelta(etas, plotting=True):
 
         Delta = FFT_for_G(etas[j], urange, grid_for_FFT(etas[j]))
 
+        k0rangej = k0range(etas[j])
+
         # cut the range to be symmetric around max of Delta
-        newk0range = k0range(etas[j])[0:2*np.argmax(Delta)]
+        newk0range = k0rangej[0:2*np.argmax(Delta)]
 
         Drange = np.linspace(0, newk0range[-1], num=1000)
         newDelta = Delta[0:2*np.argmax(Delta)].real
         norm = sum(newDelta)*(newk0range[1] - newk0range[0])
         omega_k = sum(newk0range*newDelta)*(newk0range[1] - newk0range[0])/norm
         omegas_k[j] = omega_k
-        deltajono = np.empty(len(Drange))
+        deltaseq = np.empty(len(Drange))
         for i in range(len(Drange)):
-            deltajono[i] = deltaDelta(etas[j], Drange[i], newk0range, newDelta,
-                                      norm, omega_k)
+            deltaseq[i] = deltaDelta(etas[j], Drange[i], newk0range, newDelta,
+                                     norm, omega_k)
+        if norming:
+            deltaseq = deltaseq/norm
 
         if plotting:
 
@@ -214,12 +231,14 @@ def plot_Delta_and_deltaDelta(etas, plotting=True):
                     r'$a={a}$'.format(a=a),
                     r'$H={H}$'.format(H=H),
                     r'$m={m}$'.format(m=m)))
+            constantbox = dict(boxstyle='round',
+                               facecolor='turquoise', alpha=0.5)
 
             plt.figure(figsize=(11, 6))
 
             # print('Deltan maksimi k_0 =', k0range(etas[j])[np.argmax(Delta)])
 
-            plt.plot(k0range(etas[j]), Delta, 'r',
+            plt.plot(k0rangej, Delta, 'r',
                      label=r'$\Delta^<_\bar{k}(k_0, \bar{\eta})$ FFT')
 
             plt.title(r'$\Delta^<_\bar k(k_0, \bar \eta)$'
@@ -237,29 +256,28 @@ def plot_Delta_and_deltaDelta(etas, plotting=True):
 
             # testing for FFT
             for i in range(5):
-                randk0 = random.choice(k0range(etas[j]))
+                randk0 = random.choice(k0rangej)
                 plt.plot(randk0, Delta_benchmark_integral(randk0, etas[j]),
                          'go')
 
             plt.grid()
             plt.legend(loc='upper left', fontsize=14, shadow=True)
 
-            plt.text(0.75*k0range(etas[j])[-1], 0.65*max(Delta),
-                     s=constantstr, fontsize=14,
-                     bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.7))
+            plt.text(0.75*k0rangej[-1], 0.65*max(Delta),
+                     s=constantstr, fontsize=14, bbox=constantbox)
 
             plt.show()
 
             plt.figure(figsize=(11, 6))
 
-            plt.plot(Drange, deltajono, c='g')
+            plt.plot(Drange, deltaseq, c='g')
 
             plt.ylabel(r'$\delta_\Delta$', fontsize=13)
             plt.xlabel(r'$\Delta$ in units of $k_0$', fontsize=13)
             plt.title(r'$\delta_\Delta$', fontsize=14)
-            plt.text(0.8*Drange[-1], 0.2*max(deltajono),
+            plt.text(0.8*Drange[-1], 0.2*max(deltaseq),
                      s=constantstr, fontsize=14,
-                     bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.7))
+                     bbox=constantbox)
 
             plt.grid()
             plt.show()
@@ -271,7 +289,7 @@ def plot_everything(etas, dotplot=True, plottingdeltas=True):
 
     omegas_k = plot_Delta_and_deltaDelta(etas, plottingdeltas)
 
-    # dot-plot how omega_k changes as a function of eta
+    # plot omega_k changes as a function of eta
     plt.figure(figsize=(11, 6))
     plt.title(r'$\omega_k(\bar\eta)$', fontsize=14)
     plt.xlabel(r'$\bar\eta$', fontsize=13)
@@ -294,11 +312,14 @@ etarange = [-0.1, -0.5, -1]
 
 # NOTE!: when number of etas is large use plottingdeltas=False
 # Running time is large for dense etarange
-plot_everything(etarange, dotplot=True, plottingdeltas=True)
+# plot_everything(etarange, dotplot=True, plottingdeltas=True)
 
 # when m/H -> 3/2 something weird close to eta = zero, probably grid related
 
+
+# when omega_k plot is not wanted use only this
+plot_Delta_and_deltaDelta(etarange, norming=False)
+
 # TODO: MUOKKAA KOODI LUETTAVAKSI, lisää dokumentaatiot joka funktioon
 # TODO: selkeät ohjeet, että miten ajetaan
-# TODO: optimoi deltaDelta plottaus funktioon k0rangej=k0range(etas[j]),
-# jotta ei tarvitse montaa kertaa kutsua funktiota
+# TODO: add norming to plot_everything
