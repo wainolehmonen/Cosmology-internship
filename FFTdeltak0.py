@@ -199,18 +199,22 @@ def deltaDelta(eta_bar, D, newk0range, newDelta, norm, omega_k):
 def plot_Delta_and_deltaDelta(etas, plotting=True, norming=True):
 
     omegas_k = np.empty(len(etas))
+    spikelocations = np.empty(len(etas))
 
     for j in range(len(etas)):
 
         Delta = FFT_for_G(etas[j], urange, grid_for_FFT(etas[j]))
 
         k0rangej = k0range(etas[j])
+        maxindex = np.argmax(Delta)
+        # locations of max of Delta
+        spikelocations[j] = k0rangej[maxindex]
 
         # cut the range to be symmetric around max of Delta
-        newk0range = k0rangej[0:2*np.argmax(Delta)]
+        newk0range = k0rangej[0:2*maxindex]
 
         Drange = np.linspace(0, newk0range[-1], num=1000)
-        newDelta = Delta[0:2*np.argmax(Delta)].real
+        newDelta = Delta[0:2*maxindex].real
         norm = sum(newDelta)*(newk0range[1] - newk0range[0])
         omega_k = sum(newk0range*newDelta)*(newk0range[1] - newk0range[0])/norm
         omegas_k[j] = omega_k
@@ -282,43 +286,62 @@ def plot_Delta_and_deltaDelta(etas, plotting=True, norming=True):
             plt.grid()
             plt.show()
 
-    return omegas_k
+    return omegas_k, spikelocations
 
 
 def plot_everything(etas, dotplot=True, plottingdeltas=True):
+    """
+    Plotting omega_k's, Deltas and delta_Deltas
 
-    omegas_k = plot_Delta_and_deltaDelta(etas, plottingdeltas)
+    Parameters
+    ----------
+    etas : array-like
+        means of conformal times
+    dotplot : boolean, optional
+        Do you want line or dots. The default is True.
+    plottingdeltas : boolean, optional
+        Do you want to plot deltas. The default is True.
+
+    Returns
+    -------
+    None.
+
+    """
+    omegas_k, spikelocations = plot_Delta_and_deltaDelta(etas, plottingdeltas)
 
     # plot omega_k changes as a function of eta
     plt.figure(figsize=(11, 6))
     plt.title(r'$\omega_k(\bar\eta)$', fontsize=14)
-    plt.xlabel(r'$\bar\eta$', fontsize=13)
+    plt.xlabel(r'$|\bar\eta|$', fontsize=13)
     plt.ylabel(r'$\omega_k$', fontsize=13)
     if dotplot:
-        plt.plot(etas, omegas_k, 'bx')
+        plt.plot(-etas, omegas_k, 'bx', label=r'$\omega_k$')
+        plt.plot(-etas, spikelocations, 'rx', label='location of center spike')
     else:
-        plt.plot(etas, omegas_k, 'b')
+        plt.plot(-etas, omegas_k, 'b', label=r'$\omega_k$')
+        plt.plot(-etas, spikelocations, 'r', label='location of center spike')
+    plt.legend(loc='lower right', fontsize=14)
     plt.grid()
     plt.show()
 
 
 # input etabar values
-etarange = [-0.1, -0.5, -1]
-# etarange = np.linspace(-0.1, -10, 100)
-# (etabar) mean of conformal times (eta' + eta)/2 in (-inf, 0)
+# etarange = [-0.1, -0.5, -1]
+etarange = np.linspace(-0.1, -10, num=20)
+# (etabar) mean of conformal times (eta' + eta)/2 in range (-inf, 0)
 # -k*eta > 1 subhorizon
 # -k*eta < 1 superhorizon
 
 
 # NOTE!: when number of etas is large use plottingdeltas=False
 # Running time is large for dense etarange
-# plot_everything(etarange, dotplot=True, plottingdeltas=True)
+plot_everything(etarange, dotplot=True, plottingdeltas=False)
 
 # when m/H -> 3/2 something weird close to eta = zero, probably grid related
 
 
 # when omega_k plot is not wanted use only this
-plot_Delta_and_deltaDelta(etarange, norming=False)
+# plot_Delta_and_deltaDelta(etarange, norming=False)
 
 # TODO: MUOKKAA KOODI LUETTAVAKSI, lisää dokumentaatiot joka funktioon
 # TODO: selkeät ohjeet, että miten ajetaan
