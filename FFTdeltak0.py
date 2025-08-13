@@ -205,19 +205,25 @@ def plot_Delta_and_deltaDelta(etas, plotting=True):
                                       norm, omega_k)
 
         if plotting:
+
+            a = -1/(etas[j]*H)
+
+            constantstr = '\n'.join((
+                    r'$\bar\eta={eta}$'.format(eta=etas[j]),
+                    r'$k={k}$'.format(k=k),
+                    r'$a={a}$'.format(a=a),
+                    r'$H={H}$'.format(H=H),
+                    r'$m={m}$'.format(m=m)))
+
             plt.figure(figsize=(11, 6))
 
             # print('Deltan maksimi k_0 =', k0range(etas[j])[np.argmax(Delta)])
 
             plt.plot(k0range(etas[j]), Delta, 'r',
                      label=r'$\Delta^<_\bar{k}(k_0, \bar{\eta})$ FFT')
-            a = -1/(etas[j]*H)
 
             plt.title(r'$\Delta^<_\bar k(k_0, \bar \eta)$'
-                      r' as a function of $k_0$'
-                      r' when $\bar \eta={b},\ k={k},\ a={c},\ H={H}$'
-                      .format(b=etas[j], k=k, c=a, H=H),
-                      fontsize=14)
+                      r' as a function of $k_0$', fontsize=14)
             plt.xlabel(r'$k_0 \in \left[k+L/\bar\eta,k-L/\bar\eta \right]$, '
                        '$L={L}$'.format(L=L), fontsize=13)
 
@@ -229,14 +235,19 @@ def plot_Delta_and_deltaDelta(etas, plotting=True):
             plt.plot(k, Delta_benchmark_integral(k, etas[j]), 'bD',
                      label=r'$\Delta^<_\bar{k}(k_0=k, \bar{\eta})$')
 
-            # benchmarking for FFT
+            # testing for FFT
             for i in range(5):
                 randk0 = random.choice(k0range(etas[j]))
-                plt.plot(randk0, Delta_benchmark_integral(randk0,
-                                                          etas[j]), 'go')
+                plt.plot(randk0, Delta_benchmark_integral(randk0, etas[j]),
+                         'go')
 
-            plt.legend(loc='upper left', fontsize=14, shadow=True)
             plt.grid()
+            plt.legend(loc='upper left', fontsize=14, shadow=True)
+
+            plt.text(0.75*k0range(etas[j])[-1], 0.65*max(Delta),
+                     s=constantstr, fontsize=14,
+                     bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.7))
+
             plt.show()
 
             plt.figure(figsize=(11, 6))
@@ -245,9 +256,10 @@ def plot_Delta_and_deltaDelta(etas, plotting=True):
 
             plt.ylabel(r'$\delta_\Delta$', fontsize=13)
             plt.xlabel(r'$\Delta$ in units of $k_0$', fontsize=13)
-            plt.title(r'$\delta_\Delta$ when '
-                      r'$\bar \eta={b},\ k={k},\ a={a},\ H={H}$'
-                      .format(b=etas[j], k=k, a=a, H=H), fontsize=14)
+            plt.title(r'$\delta_\Delta$', fontsize=14)
+            plt.text(0.8*Drange[-1], 0.2*max(deltajono),
+                     s=constantstr, fontsize=14,
+                     bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.7))
 
             plt.grid()
             plt.show()
@@ -273,17 +285,20 @@ def plot_everything(etas, dotplot=True, plottingdeltas=True):
 
 
 # input etabar values
-etarange = [-0.05, -0.1, -0.2, -0.5, -1]
+etarange = [-0.1, -0.5, -1]
 # etarange = np.linspace(-0.1, -10, 100)
 # (etabar) mean of conformal times (eta' + eta)/2 in (-inf, 0)
 # -k*eta > 1 subhorizon
 # -k*eta < 1 superhorizon
 
-# when number of etas is large, dotplot=False, plottingdeltas=False
-plot_everything(etarange)
+
+# NOTE!: when number of etas is large use plottingdeltas=False
+# Running time is large for dense etarange
+plot_everything(etarange, dotplot=True, plottingdeltas=True)
 
 # when m/H -> 3/2 something weird close to eta = zero, probably grid related
 
 # TODO: MUOKKAA KOODI LUETTAVAKSI, lisää dokumentaatiot joka funktioon
 # TODO: selkeät ohjeet, että miten ajetaan
-# TODO: LEGENDI jossa vakiot listattu, joka kuvaan!!!
+# TODO: optimoi deltaDelta plottaus funktioon k0rangej=k0range(etas[j]),
+# jotta ei tarvitse montaa kertaa kutsua funktiota
