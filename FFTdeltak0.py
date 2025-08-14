@@ -21,7 +21,7 @@ d = 4  # dimension
 k = 5  # norm of k bar in [0, inf)
 
 # number of data points for plotting and FFT (FFT matrix is N by N)
-N = 2000
+N = 3000
 
 L = 100  # limits for k0 (when eta = -1)
 
@@ -360,25 +360,33 @@ def plot_everything(etas, dotplot=True, plottingdeltas=True, norming=True):
         plt.plot(np.abs(etas), spikelocations, 'r',
                  label=r'location of the spike $\bar\omega$')
     plt.legend(loc='lower right', fontsize=14)
+    constantstr = '\n'.join((
+            r'$k={k}$'.format(k=k),
+            r'$H={H}$'.format(H=H),
+            r'$m={m}$'.format(m=m)))
+    constantbox = dict(boxstyle='round',
+                       facecolor='turquoise', alpha=0.5)
+
+    plt.text(0.85*abs(etas[-1]), 0.5*omegas_k[-1],
+             s=constantstr, fontsize=14,
+             bbox=constantbox)
+
     plt.grid()
     plt.show()
 
 
 # input etabar values
-# etarange = [-0.1, -0.5, -1]
-etarange = np.linspace(-0.1, -10, num=50)
+etarange = [-0.1, -0.5, -1, -4]
+# etarange = np.linspace(-0.1, -3, num=50)
 # (etabar) mean of conformal times (eta' + eta)/2 in range (-inf, 0)
 # -k*eta > 1 subhorizon
 # -k*eta < 1 superhorizon
 
 # NOTE!: when number of etas is large use plottingdeltas=False
 # Running time is large for dense etarange
-plot_everything(etarange, dotplot=False, plottingdeltas=False, norming=False)
+# plot_everything(etarange, dotplot=False, plottingdeltas=False, norming=False)
 
 # when m/H -> 3/2 something weird close to eta = zero, probably grid related
 
 # when omega_k plot is not wanted use only this
-# plot_Delta_and_deltaDelta(etarange, norming=False)
-
-# TODO: selkeät ohjeet, että miten ajetaan
-# TODO: lisää omega_k kuvaan vakioille boxi
+plot_Delta_and_deltaDelta(etarange, norming=False)
