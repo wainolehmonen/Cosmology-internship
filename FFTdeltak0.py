@@ -21,9 +21,9 @@ d = 4  # dimension
 k = 5  # norm of k bar in [0, inf)
 
 # number of data points for plotting and FFT (FFT matrix is N by N)
-N = 1000
+N = 2000
 
-L = 50  # limits for k0 (when eta = -1)
+L = 100  # limits for k0 (when eta = -1)
 
 # --------------
 
@@ -129,8 +129,21 @@ def plot_integrand(k_0, eta_bar):
     plt.show()
 
 
-# FFT matrix
 def grid_for_FFT(eta_bar):
+    """
+    input matrix for FFT
+
+    Parameters
+    ----------
+    eta_bar : float
+        mean of conformal times (eta + eta')/2
+
+    Returns
+    -------
+    array-like
+        NxN matrix for given eta_bar
+
+    """
     # input matrix for FFT
     x1, y1 = np.meshgrid(urange, k0range(eta_bar))
     return np.exp(-1j*x1*2*y1*eta_bar)*(urange[1] - urange[0])
@@ -197,6 +210,27 @@ def deltaDelta(eta_bar, D, newk0range, newDelta, norm, omega_k):
 
 
 def plot_Delta_and_deltaDelta(etas, plotting=True, norming=True):
+    """
+    plots Delta for given etas and then delta_Delta (different Delta)
+    and gives omega_k's and locations of the center spike of Delta's
+
+    Parameters
+    ----------
+    etas : array-like
+        means of conformal times (eta + eta')/2
+    plotting : boolean, optional
+        plots Delta and delta_Delta. The default is True.
+    norming : boolean, optional
+        norms delta_Delta to approach unity. The default is True.
+
+    Returns
+    -------
+    omegas_k : array-like
+        omega_k's for given etas.
+    spikelocations : array-like
+        locations of Deltas' center spikes for given etas.
+
+    """
 
     omegas_k = np.empty(len(etas))
     spikelocations = np.empty(len(etas))
@@ -259,10 +293,10 @@ def plot_Delta_and_deltaDelta(etas, plotting=True, norming=True):
                      label=r'$\Delta^<_\bar{k}(k_0=k, \bar{\eta})$')
 
             # testing for FFT
-            for i in range(5):
-                randk0 = random.choice(k0rangej)
-                plt.plot(randk0, Delta_benchmark_integral(randk0, etas[j]),
-                         'go')
+            # for i in range(5):
+            #     randk0 = random.choice(k0rangej)
+            #     plt.plot(randk0, Delta_benchmark_integral(randk0, etas[j]),
+            #              'go')
 
             plt.grid()
             plt.legend(loc='upper left', fontsize=14, shadow=True)
@@ -289,7 +323,7 @@ def plot_Delta_and_deltaDelta(etas, plotting=True, norming=True):
     return omegas_k, spikelocations
 
 
-def plot_everything(etas, dotplot=True, plottingdeltas=True):
+def plot_everything(etas, dotplot=True, plottingdeltas=True, norming=True):
     """
     Plotting omega_k's, Deltas and delta_Deltas
 
@@ -298,28 +332,33 @@ def plot_everything(etas, dotplot=True, plottingdeltas=True):
     etas : array-like
         means of conformal times
     dotplot : boolean, optional
-        Do you want line or dots. The default is True.
+        line or dots for omega_k plot, dots is true. The default is True.
     plottingdeltas : boolean, optional
-        Do you want to plot deltas. The default is True.
+        plot delta_Delta and Delta. The default is True.
+    norming : boolean, optional
+        norms the delta_Delta so it approaches unity
 
     Returns
     -------
     None.
 
     """
-    omegas_k, spikelocations = plot_Delta_and_deltaDelta(etas, plottingdeltas)
+    omegas_k, spikelocations = plot_Delta_and_deltaDelta(etas, plottingdeltas,
+                                                         norming)
 
     # plot omega_k changes as a function of eta
     plt.figure(figsize=(11, 6))
-    plt.title(r'$\omega_k(\bar\eta)$', fontsize=14)
+    plt.title(r'$\omega_k$ vs $\bar\omega$', fontsize=14)
     plt.xlabel(r'$|\bar\eta|$', fontsize=13)
-    plt.ylabel(r'$\omega_k$', fontsize=13)
+    plt.ylabel(r'units of $k_0$', fontsize=13)
     if dotplot:
-        plt.plot(-etas, omegas_k, 'bx', label=r'$\omega_k$')
-        plt.plot(-etas, spikelocations, 'rx', label='location of center spike')
+        plt.plot(np.abs(etas), omegas_k, 'bx', label=r'$\omega_k$')
+        plt.plot(np.abs(etas), spikelocations, 'rx',
+                 label=r'location of the spike $\bar\omega$')
     else:
-        plt.plot(-etas, omegas_k, 'b', label=r'$\omega_k$')
-        plt.plot(-etas, spikelocations, 'r', label='location of center spike')
+        plt.plot(np.abs(etas), omegas_k, 'b', label=r'$\omega_k$')
+        plt.plot(np.abs(etas), spikelocations, 'r',
+                 label=r'location of the spike $\bar\omega$')
     plt.legend(loc='lower right', fontsize=14)
     plt.grid()
     plt.show()
@@ -327,22 +366,19 @@ def plot_everything(etas, dotplot=True, plottingdeltas=True):
 
 # input etabar values
 # etarange = [-0.1, -0.5, -1]
-etarange = np.linspace(-0.1, -10, num=20)
+etarange = np.linspace(-0.1, -10, num=50)
 # (etabar) mean of conformal times (eta' + eta)/2 in range (-inf, 0)
 # -k*eta > 1 subhorizon
 # -k*eta < 1 superhorizon
 
-
 # NOTE!: when number of etas is large use plottingdeltas=False
 # Running time is large for dense etarange
-plot_everything(etarange, dotplot=True, plottingdeltas=False)
+plot_everything(etarange, dotplot=False, plottingdeltas=False, norming=False)
 
 # when m/H -> 3/2 something weird close to eta = zero, probably grid related
-
 
 # when omega_k plot is not wanted use only this
 # plot_Delta_and_deltaDelta(etarange, norming=False)
 
-# TODO: MUOKKAA KOODI LUETTAVAKSI, lisää dokumentaatiot joka funktioon
 # TODO: selkeät ohjeet, että miten ajetaan
-# TODO: add norming to plot_everything
+# TODO: lisää omega_k kuvaan vakioille boxi
