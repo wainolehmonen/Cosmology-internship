@@ -2,7 +2,7 @@
 """
 Created on Tue Aug 19 09:49:02 2025
 
-@author: waisk
+@author: Wäinö Lehmonen
 """
 
 import scipy as sc
@@ -440,6 +440,7 @@ def plot_rho2(rho2s, etas):
     plt.show()
 
 
+# TODO: kysy f:n imaginaariosasta
 def plot_f(rho0s, drho0s, rho2s, etas):
     """
     Plots f+ and f- as a function of eta
