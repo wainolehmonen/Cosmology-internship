@@ -55,7 +55,7 @@ def rho_2k(eta_bar, k):
 
 # numerical differentiation for benchmarking
 def Drho_0kn(eta_bar, k):
-    return np.gradient(rho_0k(eta_bar, k), axis=0)
+    return np.gradient(rho_0k(eta_bar, k), eta_bar)
 
 
 # not the same as numerical??
@@ -77,7 +77,7 @@ def fplus(eta_bar, k):
 
 
 N = 300
-etabar = np.linspace(-1000, 0, N)
+etabar = np.linspace(-5, 0, N)
 knorm = np.linspace(0, 40, N)
 knormi = 5
 
@@ -112,10 +112,10 @@ plt.plot(etabar, rho2k, 'r')
 plt.title(r'$\rho_{2k}(\bar{\eta})$')
 plt.show()
 
-# plt.figure()
-# plt.plot(etabar, f, 'm')
-# plt.title(r'$f^+(\bar{\eta})$')
-# plt.show()
+plt.figure()
+plt.plot(etabar, f, 'm')
+plt.title(r'$f^+(\bar{\eta})$')
+plt.show()
 
 
 # x1, y1 = np.meshgrid(etabar, knorm)

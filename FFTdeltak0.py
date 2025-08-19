@@ -21,7 +21,7 @@ d = 4  # dimension
 k = 5  # norm of k bar in [0, inf)
 
 # number of data points for plotting and FFT (FFT matrix is N by N)
-N = 3000
+N = 1000
 
 L = 100  # limits for k0 (when eta = -1)
 
@@ -249,15 +249,15 @@ def plot_Delta_and_deltaDelta(etas, plotting=True, norming=True):
 
         Drange = np.linspace(0, newk0range[-1], num=1000)
         newDelta = Delta[0:2*maxindex].real
-        norm = sum(newDelta)*(newk0range[1] - newk0range[0])
-        omega_k = sum(newk0range*newDelta)*(newk0range[1] - newk0range[0])/norm
+        rho0 = sum(newDelta)*(newk0range[1] - newk0range[0])
+        omega_k = sum(newk0range*newDelta)*(newk0range[1] - newk0range[0])/rho0
         omegas_k[j] = omega_k
         deltaseq = np.empty(len(Drange))
         for i in range(len(Drange)):
             deltaseq[i] = deltaDelta(etas[j], Drange[i], newk0range, newDelta,
-                                     norm, omega_k)
+                                     rho0, omega_k)
         if norming:
-            deltaseq = deltaseq/norm
+            deltaseq = deltaseq/rho0
 
         if plotting:
 
@@ -320,7 +320,7 @@ def plot_Delta_and_deltaDelta(etas, plotting=True, norming=True):
             plt.grid()
             plt.show()
 
-    return omegas_k, spikelocations
+    return omegas_k, spikelocations, rho0
 
 
 def plot_everything(etas, dotplot=True, plottingdeltas=True, norming=True):
@@ -343,8 +343,9 @@ def plot_everything(etas, dotplot=True, plottingdeltas=True, norming=True):
     None.
 
     """
-    omegas_k, spikelocations = plot_Delta_and_deltaDelta(etas, plottingdeltas,
-                                                         norming)
+    omegas_k, spikelocations, rho0 = plot_Delta_and_deltaDelta(etas,
+                                                               plottingdeltas,
+                                                               norming)
 
     # plot omega_k changes as a function of eta
     plt.figure(figsize=(11, 6))
@@ -376,17 +377,15 @@ def plot_everything(etas, dotplot=True, plottingdeltas=True, norming=True):
 
 
 # input etabar values
-etarange = [-0.1, -0.5, -1, -4]
-# etarange = np.linspace(-0.1, -3, num=50)
+# etarange = [-0.01, -0.5, -1, -4]
+etarange = np.linspace(-0.1, -5, num=20)
 # (etabar) mean of conformal times (eta' + eta)/2 in range (-inf, 0)
 # -k*eta > 1 subhorizon
 # -k*eta < 1 superhorizon
 
 # NOTE!: when number of etas is large use plottingdeltas=False
 # Running time is large for dense etarange
-# plot_everything(etarange, dotplot=False, plottingdeltas=False, norming=False)
-
-# when m/H -> 3/2 something weird close to eta = zero, probably grid related
+plot_everything(etarange, dotplot=False, plottingdeltas=False, norming=False)
 
 # when omega_k plot is not wanted use only this
-plot_Delta_and_deltaDelta(etarange, norming=False)
+# plot_Delta_and_deltaDelta(etarange, norming=False)
