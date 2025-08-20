@@ -1,11 +1,11 @@
 # Kosmoprojekti
 
-Kesäharjoittelu koodia
+Code of my summer internship at JYU cosmology group
+Program can be used to study the free scalar two-point function
+and its Wigner transform in a de Sitter universe.
 
--Koodissa FFTdeltak0.py on plotattu FFT:n avulla laskettua suuretta $\Delta_{\bar{k}}^<(k_0, \bar{\eta})$ muuttujan $k_0$ funktiona (Tätä ollaan tarkasteltu palavereissa)
-
--Vastaavasti FFTdeltaetak0.py on ekvivalentti muotoilu, mutta nyt muuttujana $k_0\bar{\eta}$
-
--FFTdeltamultiplotti.py:ssä $k_0\bar{\eta}$ funktiona voi plotata samaan kuvaajaan usealla $\bar{\eta}$ arvolla
-
--momenttienplottaus.py on vaiheessa (selvitettävä deltafunktion esitys äärellisessä laatikossa)
+It can be used to plot:
+-$\Delta_{\bar{k}}^<(k_0, \bar{\eta})$ as a function of $k_0$
+-Tests $\delta_\Delta$, $\omega_k$ to check how close $\Delta_{\bar{k}}^<(k_0, \bar{\eta})$ is to Dirac delta function
+-The moments $\rho_{nk},\ n\in{0, 2}$ and $\partial_\eta\rho_{0k}$ as functions of $\eta$
+-The functions $f^\pm_{c\bar{k}}(\eta)$ which describe particle/antiparticle coherence

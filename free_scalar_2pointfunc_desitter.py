@@ -440,7 +440,6 @@ def plot_rho2(rho2s, etas):
     plt.show()
 
 
-# TODO: kysy f:n imaginaariosasta
 def plot_f(rho0s, drho0s, rho2s, etas):
     """
     Plots f+ and f- as a function of eta
@@ -462,11 +461,12 @@ def plot_f(rho0s, drho0s, rho2s, etas):
 
     """
     omega_k = np.sqrt(k**2 + m**2)  # vois olla globaali, mutta nimet ongelma
-    fminus = omega_k*rho0s - rho2s/omega_k + etas*H*drho0s/2
-    fplus = omega_k*rho0s - rho2s/omega_k - etas*H*drho0s/2
+    freal = omega_k*rho0s - rho2s/omega_k + etas*H*drho0s/2
+    fminus_imag = etas*H*drho0s/2
+    fplus_imag = -etas*H*drho0s/2
     plt.figure(figsize=(11, 6))
-    plt.plot(etas, fminus, 'b')
-    plt.title(r'$f^-(\bar\eta)$', fontsize=14)
+    plt.plot(etas, freal, 'g')
+    plt.title(r'$f^\pm(\bar\eta)$ real part', fontsize=14)
     plt.xlabel(r'$\bar\eta$', fontsize=13)
     constantstr = '\n'.join((
             r'$k={k}$'.format(k=k),
@@ -474,15 +474,16 @@ def plot_f(rho0s, drho0s, rho2s, etas):
             r'$m={m}$'.format(m=m)))
     constantbox = dict(boxstyle='round',
                        facecolor='turquoise', alpha=0.5)
-    plt.text(etas[0], 0.7*min(fminus),
+    plt.text(etas[0], 0.7*min(freal),
              s=constantstr, fontsize=14,
              bbox=constantbox)  # textbox location depends on the parameters
     plt.grid()
     plt.show()
 
     plt.figure(figsize=(11, 6))
-    plt.plot(etas, fplus, 'r')
-    plt.title(r'$f^+(\bar\eta)$', fontsize=14)
+    plt.plot(etas, fminus_imag, 'b', label=r'$\Im(f^-)$')
+    plt.plot(etas, fplus_imag, 'r', label=r'$\Im(f^+)$')
+    plt.title(r'$f^\pm(\bar\eta)$ imaginary part', fontsize=14)
     plt.xlabel(r'$\bar\eta$', fontsize=13)
     constantstr = '\n'.join((
             r'$k={k}$'.format(k=k),
@@ -490,9 +491,10 @@ def plot_f(rho0s, drho0s, rho2s, etas):
             r'$m={m}$'.format(m=m)))
     constantbox = dict(boxstyle='round',
                        facecolor='turquoise', alpha=0.5)
-    plt.text(etas[0], 0.7*min(fplus),
+    plt.text(etas[0], 0,
              s=constantstr, fontsize=14,
              bbox=constantbox)  # textbox location depends on the parameters
+    plt.legend(loc='upper right', fontsize=14, shadow=True)
     plt.grid()
     plt.show()
 
@@ -566,7 +568,7 @@ def plotting(etas, Deltaplot=False, deltaDplot=False, rho0plot=False,
 
 # input etabar values
 # etarange = [-0.1, -0.5, -1, -4]
-etarange = np.linspace(-3, -0.1, num=30)
+etarange = np.linspace(-10, -0.1, num=100)
 # (etabar) mean of conformal times (eta' + eta)/2 in range (-inf, 0)
 # -k*eta > 1 subhorizon
 # -k*eta < 1 superhorizon
@@ -574,6 +576,6 @@ etarange = np.linspace(-3, -0.1, num=30)
 # etas must be in order when plotting rhos or fs
 # NOTE!: when number of etas is large, use: Deltaplot=False, deltaDplot=False
 plotting(etarange, Deltaplot=False, deltaDplot=False, omega_kplot=False,
-         rho0plot=True, fplot=True, rho2plot=True)
+         rho0plot=False, fplot=True, rho2plot=False)
 
 # Running time is large for dense etarange
