@@ -1,4 +1,4 @@
-# Kosmoprojekti
+# Cosmology internship
 
 Code of my summer internship at JYU cosmology group
 Program can be used to study the free scalar two-point function
