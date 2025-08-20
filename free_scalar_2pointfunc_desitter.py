@@ -460,7 +460,7 @@ def plot_f(rho0s, drho0s, rho2s, etas):
     None.
 
     """
-    omega_k = np.sqrt(k**2 + m**2)  # vois olla globaali, mutta nimet ongelma
+    omega_k = np.sqrt(k**2 + m**2)
     freal = omega_k*rho0s - rho2s/omega_k + etas*H*drho0s/2
     fminus_imag = etas*H*drho0s/2
     fplus_imag = -etas*H*drho0s/2
