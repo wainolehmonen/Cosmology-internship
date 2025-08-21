@@ -306,7 +306,7 @@ def plotdeltaD(eta, cutk0, norm, omega_k, a, cutDelta):
     plt.plot(Drange, deltaseq, c='g')  # for normed one, deltaseq/norm
 
     plt.ylabel(r'$\delta_\Delta$', fontsize=13)
-    plt.xlabel(r'$\Delta$ in units of $k_0$', fontsize=13)
+    plt.xlabel(r'$\Delta$', fontsize=13)
     plt.title(r'$\delta_\Delta$', fontsize=14)
     plt.text(0.8*Drange[-1], 0.2*max(deltaseq),
              s=constantstr, fontsize=14,
@@ -461,12 +461,12 @@ def plot_f(rho0s, drho0s, rho2s, etas):
 
     """
     omega_k = np.sqrt(k**2 + m**2)
-    freal = omega_k*rho0s - rho2s/omega_k + etas*H*drho0s/2
+    freal = omega_k*rho0s - rho2s/omega_k
     fminus_imag = etas*H*drho0s/2
     fplus_imag = -etas*H*drho0s/2
     plt.figure(figsize=(11, 6))
     plt.plot(etas, freal, 'g')
-    plt.title(r'$f^\pm(\bar\eta)$ real part', fontsize=14)
+    plt.title(r'$f_{\bar{k}c}^\pm(\bar\eta)$ real part', fontsize=14)
     plt.xlabel(r'$\bar\eta$', fontsize=13)
     constantstr = '\n'.join((
             r'$k={k}$'.format(k=k),
@@ -481,9 +481,9 @@ def plot_f(rho0s, drho0s, rho2s, etas):
     plt.show()
 
     plt.figure(figsize=(11, 6))
-    plt.plot(etas, fminus_imag, 'b', label=r'$\Im(f^-)$')
-    plt.plot(etas, fplus_imag, 'r', label=r'$\Im(f^+)$')
-    plt.title(r'$f^\pm(\bar\eta)$ imaginary part', fontsize=14)
+    plt.plot(etas, fminus_imag, 'b', label=r'$\Im(f_{\bar{k}c}^-)$')
+    plt.plot(etas, fplus_imag, 'r', label=r'$\Im(f_{\bar{k}c}^+)$')
+    plt.title(r'$f_{\bar{k}c}^\pm(\bar\eta)$ imaginary part', fontsize=14)
     plt.xlabel(r'$\bar\eta$', fontsize=13)
     constantstr = '\n'.join((
             r'$k={k}$'.format(k=k),
@@ -576,6 +576,6 @@ etarange = np.linspace(-10, -0.1, num=100)
 # etas must be in order when plotting rhos or fs
 # NOTE!: when number of etas is large, use: Deltaplot=False, deltaDplot=False
 plotting(etarange, Deltaplot=False, deltaDplot=False, omega_kplot=False,
-         rho0plot=False, fplot=True, rho2plot=False)
+         rho0plot=True, fplot=True, rho2plot=True)
 
 # Running time is large for dense etarange
