@@ -1,6 +1,7 @@
 # Cosmology internship
 
-Code of my summer internship at JYU cosmology group
+Code of my summer internship at JYU cosmology group.
+
 Program can be used to study the free scalar two-point function
 and its Wigner transform in a de Sitter universe.
 

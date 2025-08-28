@@ -21,9 +21,9 @@ d = 4  # dimension
 k = 5  # norm of k bar in [0, inf)
 
 # number of data points for plotting and FFT (FFT matrix is N by N)
-N = 3000
+N = 4000
 
-L = 200  # limits for k0 (when eta = -1)
+L = 250  # limits for k0 (when eta = -1)
 
 # --------------
 
@@ -173,7 +173,8 @@ def FFT_for_G(eta, u, gridmatrix):
     hankel_b = sc.special.hankel2(nu, -k*eta*(u + 1))
     c = (1 - u**2)**(3/2)
     A = hankel_a*hankel_b*c
-    return np.pi/2*H**2*eta**4*np.matmul(gridmatrix, A)
+    return np.pi/2*H**4*eta**6*np.matmul(gridmatrix, A)
+    # divided original Delta by a^2=1/(H**2*eta**2)
 
 
 def deltaD(D, newk0range, newDelta, omega_k):
@@ -460,12 +461,14 @@ def plot_f(rho0s, drho0s, rho2s, etas):
     None.
 
     """
-    omega_k = np.sqrt(k**2 + m**2)
-    freal = omega_k*rho0s - rho2s/omega_k
-    fminus_imag = etas*H*drho0s/2
-    fplus_imag = -etas*H*drho0s/2
+    a2_list = 1/(etas*H)**2  # scale factor a squared
+    m_eff2 = a2_list*(m**2 - 2*H**2)  # efective mass squared
+    omega_k = np.emath.sqrt(k**2 + m_eff2)
+    fminus = omega_k*rho0s - rho2s/omega_k + 1j*etas*H*drho0s/2
+    fplus = omega_k*rho0s - rho2s/omega_k - 1j*etas*H*drho0s/2
+
     plt.figure(figsize=(11, 6))
-    plt.plot(etas, freal, 'g')
+    plt.plot(etas, fminus.real, 'g')
     plt.title(r'$f_{\bar{k}c}^\pm(\bar\eta)$ real part', fontsize=14)
     plt.xlabel(r'$\bar\eta$', fontsize=13)
     constantstr = '\n'.join((
@@ -474,15 +477,31 @@ def plot_f(rho0s, drho0s, rho2s, etas):
             r'$m={m}$'.format(m=m)))
     constantbox = dict(boxstyle='round',
                        facecolor='turquoise', alpha=0.5)
-    plt.text(etas[0], 0.7*min(freal),
+    plt.text(etas[0], 0.7*min(fminus.real),
              s=constantstr, fontsize=14,
              bbox=constantbox)  # textbox location depends on the parameters
     plt.grid()
     plt.show()
 
     plt.figure(figsize=(11, 6))
-    plt.plot(etas, fminus_imag, 'b', label=r'$\Im(f_{\bar{k}c}^-)$')
-    plt.plot(etas, fplus_imag, 'r', label=r'$\Im(f_{\bar{k}c}^+)$')
+    plt.plot(etas, fminus.imag, 'b', label=r'$\Im(f_{\bar{k}c}^-)$')
+    plt.title(r'$f_{\bar{k}c}^\pm(\bar\eta)$ imaginary part', fontsize=14)
+    plt.xlabel(r'$\bar\eta$', fontsize=13)
+    constantstr = '\n'.join((
+            r'$k={k}$'.format(k=k),
+            r'$H={H}$'.format(H=H),
+            r'$m={m}$'.format(m=m)))
+    constantbox = dict(boxstyle='round',
+                       facecolor='turquoise', alpha=0.5)
+    plt.text(etas[0], 0,
+             s=constantstr, fontsize=14,
+             bbox=constantbox)  # textbox location depends on the parameters
+    plt.legend(loc='upper right', fontsize=14, shadow=True)
+    plt.grid()
+    plt.show()
+
+    plt.figure(figsize=(11, 6))
+    plt.plot(etas, fplus.imag, 'r', label=r'$\Im(f_{\bar{k}c}^+)$')
     plt.title(r'$f_{\bar{k}c}^\pm(\bar\eta)$ imaginary part', fontsize=14)
     plt.xlabel(r'$\bar\eta$', fontsize=13)
     constantstr = '\n'.join((
@@ -568,7 +587,7 @@ def plotting(etas, Deltaplot=False, deltaDplot=False, rho0plot=False,
 
 # input etabar values
 # etarange = [-0.1, -0.5, -1, -4]
-etarange = np.linspace(-10, -0.1, num=100)
+etarange = np.linspace(-5, -0.1, num=50)
 # (etabar) mean of conformal times (eta' + eta)/2 in range (-inf, 0)
 # -k*eta > 1 subhorizon
 # -k*eta < 1 superhorizon
